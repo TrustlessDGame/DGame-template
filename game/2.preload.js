@@ -1,11 +1,12 @@
 // DO NOT EDIT
-let web3;
+let provider;
 
 function preload() {
-    web3 = new Web3(Web3.givenProvider)
-    if (!window.ethereum) {
-        alert('Please install metamask')
-    }
+  if (!window.ethereum) {
+    alert("Please install metamask");
+    return;
+  }
+  provider = new ethers.providers.Web3Provider(window.ethereum);
 }
 
 preload();
