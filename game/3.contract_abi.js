@@ -416,4 +416,133 @@ const GAME_NFT_ERC1155_ABI_INTERFACE_JSON = [{
         "internalType": "bool", "name": "", "type": "bool"
     }], "stateMutability": "view", "type": "function"
 }];
+BFS_CONTRACTT_ABI_INTERFACE_JSON = [{
+    "inputs": [], "name": "FileExists", "type": "error"
+}, {
+    "inputs": [], "name": "InvalidBfsResult", "type": "error"
+}, {
+    "inputs": [], "name": "InvalidURI", "type": "error"
+}, {
+    "anonymous": false, "inputs": [{
+        "indexed": true, "internalType": "address", "name": "addr", "type": "address"
+    }, {
+        "indexed": false, "internalType": "string", "name": "filename", "type": "string"
+    }, {
+        "indexed": false, "internalType": "uint256", "name": "chunkIndex", "type": "uint256"
+    }, {
+        "indexed": true, "internalType": "uint256", "name": "bfsId", "type": "uint256"
+    }, {
+        "indexed": false, "internalType": "string", "name": "uri", "type": "string"
+    }], "name": "FileStored", "type": "event"
+}, {
+    "anonymous": false, "inputs": [{
+        "indexed": false, "internalType": "uint8", "name": "version", "type": "uint8"
+    }], "name": "Initialized", "type": "event"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "", "type": "address"
+    }, {
+        "internalType": "string", "name": "", "type": "string"
+    }], "name": "bfsId", "outputs": [{
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "", "type": "address"
+    }, {
+        "internalType": "string", "name": "", "type": "string"
+    }], "name": "chunks", "outputs": [{
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "addr", "type": "address"
+    }, {
+        "internalType": "string", "name": "filename", "type": "string"
+    }], "name": "count", "outputs": [{
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "", "type": "address"
+    }, {
+        "internalType": "string", "name": "", "type": "string"
+    }, {
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "name": "dataStorage", "outputs": [{
+        "internalType": "bytes", "name": "", "type": "bytes"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "", "type": "address"
+    }, {
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "name": "filenames", "outputs": [{
+        "internalType": "string", "name": "", "type": "string"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [], "name": "getAllAddresses", "outputs": [{
+        "internalType": "address[]", "name": "", "type": "address[]"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "addr", "type": "address"
+    }], "name": "getAllFilenames", "outputs": [{
+        "internalType": "string[]", "name": "", "type": "string[]"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "addr", "type": "address"
+    }, {
+        "internalType": "string", "name": "filename", "type": "string"
+    }], "name": "getId", "outputs": [{
+        "internalType": "uint256", "name": "", "type": "uint256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [], "name": "initialize", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "addr", "type": "address"
+    }, {
+        "internalType": "string", "name": "filename", "type": "string"
+    }, {
+        "internalType": "uint256", "name": "chunkIndex", "type": "uint256"
+    }], "name": "load", "outputs": [{
+        "internalType": "bytes", "name": "", "type": "bytes"
+    }, {
+        "internalType": "int256", "name": "", "type": "int256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "address", "name": "addr", "type": "address"
+    }, {
+        "internalType": "string", "name": "filename", "type": "string"
+    }], "name": "loadFile", "outputs": [{
+        "internalType": "bytes", "name": "", "type": "bytes"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "string", "name": "uri", "type": "string"
+    }], "name": "loadFileWithUri", "outputs": [{
+        "internalType": "bytes", "name": "", "type": "bytes"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "string", "name": "uri", "type": "string"
+    }, {
+        "internalType": "uint256", "name": "chunkIndex", "type": "uint256"
+    }], "name": "loadWithUri", "outputs": [{
+        "internalType": "bytes", "name": "", "type": "bytes"
+    }, {
+        "internalType": "int256", "name": "", "type": "int256"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "string", "name": "filename", "type": "string"
+    }, {
+        "internalType": "uint256", "name": "chunkIndex", "type": "uint256"
+    }, {
+        "internalType": "bytes", "name": "_data", "type": "bytes"
+    }], "name": "store", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}]
 // DO NOT EDIT
