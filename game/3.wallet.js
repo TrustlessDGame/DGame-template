@@ -56,7 +56,7 @@ class WalletData {
     return {
       privateKey: decryptAES(
         walletData[ACCOUNT_KEY],
-        walletData[PASS_WORD] + gameKey
+        walletData[PASS_WORD] + SALT_PASS
       ),
       address: walletData[ADDRESS_KEY],
       password: walletData[PASS_WORD],
@@ -72,8 +72,8 @@ class WalletData {
     console.log("prvKey: ", prvKey);
 
     // Create game key
-    const gameKey = this._getGameKey();
-    const finalPassword = password + gameKey;
+    // const gameKey = this._getGameKey();
+    const finalPassword = password + SALT_PASS;
     // Create hash private key
     const hashPrvKey = encryptAES(prvKey, finalPassword);
 
