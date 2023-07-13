@@ -33,7 +33,10 @@ async function Reset() {
 }
 
 // Game play
-document.body.innerHTML =
+var main = document.createElement("main");
+main.id = "main";
+main.classList.add("background");
+main.innerHTML =
   '<main id="main" class="background">\n' +
   '        <section class="display">\n' +
   '            Player <span class="display-player playerX">X</span>\'s turn\n' +
@@ -54,6 +57,8 @@ document.body.innerHTML =
   '            <button id="reset">Reset</button>\n' +
   "        </section>\n<section id='processing' class='hide' style='color: #f0f0f0'>Processing...</section>" +
   "    </main>";
+
+document.body.appendChild(main);
 window.addEventListener("DOMContentLoaded", () => {
   const tiles = Array.from(document.querySelectorAll(".tile"));
   const playerDisplay = document.querySelector(".display-player");

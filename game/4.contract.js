@@ -11,29 +11,48 @@ class ContractInteraction {
     return contract;
   }
 
+  // async signAndSendTx(tx) {
+  //   const signedTx = await this.Web3.eth.accounts.signTransaction(
+  //     tx,
+  //     this.WalletData.Wallet.account.privateKey
+  //   );
+  //   if (signedTx.rawTransaction != null) {
+  //     let sentTx = await this.Web3.eth.sendSignedTransaction(
+  //       signedTx.rawTransaction,
+  //       function (err, txHash) {
+  //         if (!err) {
+  //           console.log(
+  //             "The hash of your transaction is: ",
+  //             txHash,
+  //             "\nCheck mempool to view the status of your transaction!"
+  //           );
+  //         } else {
+  //           console.log(
+  //             "Something went wrong when submitting your transaction:",
+  //             err
+  //           );
+  //         }
+  //       }
+  //     );
+  //     return sentTx;
+  //   }
+  // }
+
   async signAndSendTx(tx) {
-    const signedTx = await this.Web3.eth.accounts.signTransaction(
-      tx,
-      this.WalletData.Wallet.account.privateKey
+    const wallet = new ethers.Wallet(
+      this.WalletData.Wallet.privateKey,
+      provider
     );
+    const signedTx = await wallet.signTransaction(tx);
+
     if (signedTx.rawTransaction != null) {
-      let sentTx = await this.Web3.eth.sendSignedTransaction(
-        signedTx.rawTransaction,
-        function (err, txHash) {
-          if (!err) {
-            console.log(
-              "The hash of your transaction is: ",
-              txHash,
-              "\nCheck mempool to view the status of your transaction!"
-            );
-          } else {
-            console.log(
-              "Something went wrong when submitting your transaction:",
-              err
-            );
-          }
-        }
-      );
+      let sentTx = await this.provider.sendTransaction(signedTx.rawTransaction);
+
+      sentTx = await sentTx.wait(); // Wait for transaction confirmation
+
+      console.log("The hash of your transaction is: ", sentTx.hash);
+      console.log("Check mempool to view the status of your transaction!");
+
       return sentTx;
     }
   }
@@ -77,20 +96,26 @@ class ContractInteraction {
     const contract = this.loadContract(abiJson, contractAddress);
 
     const methods = contract.functions;
-    return;
+
+    console.log("This wallet data: ", this.WalletData);
+    console.log("methods: ", methods);
+    console.log("...params: ", methodWithParams);
+
     const method = await methods[methodWithParams.replace(/\s/g, "")](
       ...params
     );
 
+    return;
+
     if (nonce == 0 || nonce == null) {
       nonce = await this.provider.getTransactionCount(
-        this.WalletData.Wallet.account.address,
+        this.WalletData.Wallet.address,
         "latest"
       ); //get latest nonce
     }
     console.log({ nonce });
     const tx = {
-      from: this.WalletData.from,
+      from: this.WalletData.Wallet.address,
       to: contractAddress,
       nonce: nonce,
       gas: gas,
