@@ -6,34 +6,59 @@ class ContractInteraction {
   constructor() {}
 
   loadContract(abiJson, contractAddress) {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum);
-    let contract = new ethers.Contract(contractAddress, abiJson, provider);
+    const wallet = new ethers.Wallet(
+      this.WalletData.Wallet.privateKey,
+      provider
+    );
+    const signer = wallet.connect(provider);
+    let contract = new ethers.Contract(contractAddress, abiJson, signer);
     return contract;
   }
 
-  async signAndSendTx(tx) {
-    const signedTx = await this.Web3.eth.accounts.signTransaction(
-      tx,
-      this.WalletData.Wallet.account.privateKey
-    );
-    if (signedTx.rawTransaction != null) {
-      let sentTx = await this.Web3.eth.sendSignedTransaction(
-        signedTx.rawTransaction,
-        function (err, txHash) {
-          if (!err) {
-            console.log(
-              "The hash of your transaction is: ",
-              txHash,
-              "\nCheck mempool to view the status of your transaction!"
-            );
-          } else {
-            console.log(
-              "Something went wrong when submitting your transaction:",
-              err
-            );
+  checkTransactionStatus(txHash) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let intervalId;
+
+        const checkStatus = async () => {
+          try {
+            const receipt = await provider.getTransactionReceipt(txHash);
+
+            if (receipt && receipt.blockNumber) {
+              console.log(
+                "Transaction confirmed in block:",
+                receipt.blockNumber
+              );
+              clearInterval(intervalId);
+              resolve(receipt);
+            } else {
+              console.log("Transaction is still pending.");
+            }
+          } catch (error) {
+            console.log("Error retrieving transaction receipt:", error);
+            clearInterval(intervalId);
+            reject(error);
           }
-        }
-      );
+        };
+
+        intervalId = setInterval(checkStatus, 1000);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async signAndSendTx(tx) {
+    const wallet = new ethers.Wallet(
+      this.WalletData.Wallet.privateKey,
+      provider
+    );
+    const signedTx = await wallet.signTransaction(tx);
+
+    if (signedTx.rawTransaction != null) {
+      let sentTx = await this.provider.sendTransaction(signedTx.rawTransaction);
+
+      sentTx = await sentTx.wait(); // Wait for transaction confirmation
       return sentTx;
     }
   }
@@ -48,13 +73,8 @@ class ContractInteraction {
       params
     );
     const contract = this.loadContract(abiJson, contractAddress);
-    const tx = {
-      from: this.WalletData.from,
-      to: contractAddress,
-    };
-    const methods = contract.methods;
-    return await methods[methodWithParams.replace(/\s/g, "")](...params).call(
-      tx
+    return await contract.functions[methodWithParams.replace(/\s/g, "")](
+      ...params
     );
   }
 
@@ -74,32 +94,14 @@ class ContractInteraction {
       "with params",
       params
     );
-    const contract = this.loadContract(abiJson, contractAddress);
+    console.log("This wallet data: ", this.WalletData);
 
-    const methods = contract.functions;
-    return;
-    const method = await methods[methodWithParams.replace(/\s/g, "")](
+    const contract = this.loadContract(abiJson, contractAddress);
+    const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
       ...params
     );
-
-    if (nonce == 0 || nonce == null) {
-      nonce = await this.provider.getTransactionCount(
-        this.WalletData.Wallet.account.address,
-        "latest"
-      ); //get latest nonce
-    }
-    console.log({ nonce });
-    const tx = {
-      from: this.WalletData.from,
-      to: contractAddress,
-      nonce: nonce,
-      gas: gas,
-      data: method,
-    };
-    if (tx.gas == 0) {
-      tx.gas = await method.estimateGas(tx);
-    }
-    return await this.signAndSendTx(tx);
+    const receipt = await this.checkTransactionStatus(tx.hash);
+    return receipt;
   }
 }
 

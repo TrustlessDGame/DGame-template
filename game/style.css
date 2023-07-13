@@ -1,88 +1,174 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
 /* ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Write all your style here ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 /* (A) FULL PAGE OVERLAY */
 
 .background {
-    background-color: #12181B;
-    height: 100vh;
-    padding-top: 1px;
+  background-color: #12181b;
+  height: 100vh;
+  padding-top: 1px;
 }
 
 .title {
-    color: white;
-    text-align: center;
-    font-size: 40px;
-    margin-top: 10%;
+  color: white;
+  text-align: center;
+  font-size: 40px;
+  margin-top: 10%;
 }
 
 .display {
-    color: white;
-    font-size: 25px;
-    text-align: center;
-    margin-top: 1em;
-    margin-bottom: 1em;
+  color: white;
+  font-size: 25px;
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 .hide {
-    display: none;
+  display: none;
 }
 
 .container {
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 33% 33% 33%;
-    grid-template-rows: 33% 33% 33%;
-    max-width: 300px;
-
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  grid-template-rows: 33% 33% 33%;
+  max-width: 300px;
 }
 
 .tile {
-    border: 1px solid white;
-    min-width: 100px;
-    min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 50px;
-    cursor: pointer;
+  border: 1px solid white;
+  min-width: 100px;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  cursor: pointer;
 }
 
 .playerX {
-    color: #09C372;
+  color: #09c372;
 }
 
 .playerO {
-    color: #498AFB;
+  color: #498afb;
 }
 
 .controls {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1em;
 }
 
 .controls button {
-    color: white;
-    padding: 8px;
-    border-radius: 8px;
-    border: none;
-    font-size: 20px;
-    margin-left: 1em;
-    cursor: pointer;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 20px;
+  margin-left: 1em;
+  cursor: pointer;
 }
 
 .restart {
-    background-color: #498AFB;
+  background-color: #498afb;
 }
 
 #reset {
-    background-color: #FF3860;
+  background-color: #ff3860;
 }
 
 .disableEvent {
-    user-select: none;
-    pointer-events: none;
+  user-select: none;
+  pointer-events: none;
 }
 
+.wrap-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+}
+.wrap-modal:after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000a6;
+  z-index: -1;
+}
+.wrap-modal .bg-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  max-width: 95%;
+  background: white;
+  border-radius: 10px;
+}
+
+/* Modal Actions */
+.modal-actions .row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Modal Create Account */
+h4.modal-title {
+  font-size: 23px;
+}
+
+.modal-account {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 320px;
+}
+.form-account label,
+.form-account input {
+  display: block;
+  width: 100%;
+}
+.form-account input {
+  padding-right: 20px;
+}
+.form-account .password-input {
+  position: relative;
+}
+.form-account .toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+}
+.form-account .item {
+  margin-bottom: 20px;
+}
+.form-account #submitButton {
+  width: 100%;
+}
 /*  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Write all your style here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ */
