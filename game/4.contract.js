@@ -94,7 +94,6 @@ class ContractInteraction {
       "with params",
       params
     );
-    console.log("This wallet data: ", this.WalletData);
 
     const contract = this.loadContract(abiJson, contractAddress);
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
