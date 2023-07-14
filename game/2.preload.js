@@ -11,26 +11,40 @@ async function preload() {
     provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
     //TODO: preload assets
+    await preloadASSETS();
+}
+
+async function preloadASSETS() {
     if (Object.keys(ASSETS).length > 0) {
         for (const key in ASSETS) {
             const value = ASSETS[key]
             if (value.indexOf("bfs://") > -1) {
-                // bfs://chainid/address/file_name
-                console.log("asset bfs", key, value);
-                // split bfs path;
-                const bfsPathArray = value.split("/");
-                const _ = bfsPathArray[2];// chain ID
-                const address = bfsPathArray[3];// address
-                const fileName = bfsPathArray[4];// file_name
-                let contract = new ethers.Contract(BFS_CONTRACTT_ADDRESS, BFS_CONTRACTT_ABI_INTERFACE_JSON, provider);
-                let dataBytesArray = new Uint8Array();
-                for (let i = 0; i < count.toNumber() + 1; i++) {
-                    const chunk = await contract.load(address, fileName, i);
-                    const data = ethers.utils.arrayify(chunk[0]);
-                    dataBytesArray = concatTypedArrays(dataBytesArray, data);
+                try {
+                    // bfs://chainid/address/file_name
+                    console.log("asset bfs", key, value);
+                    // split bfs path;
+                    const bfsPathArray = value.split("/");
+                    const _ = bfsPathArray[2];// chain ID
+                    const address = bfsPathArray[3];// address
+                    const fileName = bfsPathArray[4];// file_name
+                    let contract = new ethers.Contract(BFS_CONTRACTT_ADDRESS, BFS_CONTRACTT_ABI_INTERFACE_JSON, provider);
+                    let dataBytesArray = new Uint8Array();
+                    let nextChunk = 0;
+                    do {
+                        const chunkData = await contract.load(address, fileName, nextChunk);
+                        nextChunk = chunkData[1];
+                        if (chunkData[0].length > 0) {
+                            const data = ethers.utils.arrayify(chunkData[0]);
+                            dataBytesArray = concatTypedArrays(dataBytesArray, data);
+                        }
+                    } while (nextChunk != -1)
+                    const dataString = toString(dataBytesArray);
+                    console.log(dataString);
+                    const blob = dataURItoBlob(dataString);
+                    console.log(blob);
+                } catch (e) {
+                    console.log(e);
                 }
-                const dataString = toString(dataBytesArray);
-                console.log(dataString);
             } else {
                 console.log("asset", key, value);
             }
