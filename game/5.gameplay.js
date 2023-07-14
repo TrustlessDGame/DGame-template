@@ -23,6 +23,7 @@ async function Click(x, y, move) {
 }
 
 async function Reset() {
+  return;
   return await contractInteraction.Send(
     GAME_CONTRACT_ABI_INTERFACE_JSON,
     GAME_CONTRACT_ADDRESS,
