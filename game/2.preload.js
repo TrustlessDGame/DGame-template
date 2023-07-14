@@ -31,17 +31,22 @@ async function preloadASSETS() {
                     let dataBytesArray = new Uint8Array();
                     let nextChunk = 0;
                     do {
-                        const chunkData = await contract.load(address, fileName, nextChunk);
+                        const chunkData = await contract.load(address, fileName + ".gz", nextChunk);
                         nextChunk = chunkData[1];
                         if (chunkData[0].length > 0) {
                             const data = ethers.utils.arrayify(chunkData[0]);
                             dataBytesArray = concatTypedArrays(dataBytesArray, data);
                         }
                     } while (nextChunk != -1)
-                    const dataString = toString(dataBytesArray);
-                    console.log(dataString);
-                    const blob = dataURItoBlob(dataString);
-                    console.log(blob);
+                    if (dataBytesArray.length > 0) {
+                        const dataString = toString(dataBytesArray);
+                        console.log(dataString);
+                        const blob = dataURItoBlob(dataString);
+                        console.log(blob);
+                        const gzipFile = URL.createObjectURL(blob);
+                        console.log(gzipFile);
+                        ASSETS[key] = gzipFile;
+                    }
                 } catch (e) {
                     console.log(e);
                 }
