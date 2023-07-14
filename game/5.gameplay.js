@@ -36,28 +36,28 @@ async function Reset() {
 // Game play
 var main = document.createElement("main");
 main.id = "main";
-main.classList.add("background");
-main.innerHTML =
-  '<main id="main" class="background">\n' +
-  '        <section class="display">\n' +
-  '            Player <span class="display-player playerX">X</span>\'s turn\n' +
-  "        </section>\n" +
-  '        <section class="container">\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  '            <div class="tile"></div>\n' +
-  "        </section>\n" +
-  '        <section class="display announcer hide"></section>\n' +
-  '        <section class="controls">\n' +
-  '            <button id="reset">Reset</button>\n' +
-  "        </section>\n<section id='processing' class='hide' style='color: #f0f0f0'>Processing...</section>" +
-  "    </main>";
+main.innerHTML = `
+          <div class="background">
+            <section class="display">
+                Player <span class="display-player playerX">X</span>\'s turn
+            </section>
+            <section class="container">
+              <div class="tile"></div>
+              <div class="tile"></div>
+              <div class="tile"></div>
+              <div class="tile"></div>
+              <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+                <div class="tile"></div>
+            </section>
+            <section class="display announcer hide"></section>
+            <section class="controls">
+                <button id="reset">Reset</button>
+            </section>
+            <section id='processing' class='hide' style='color: #f0f0f0'>Processing...</section>
+          </div>`;
 
 document.body.appendChild(main);
 window.addEventListener("DOMContentLoaded", () => {

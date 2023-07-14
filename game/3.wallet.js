@@ -27,6 +27,19 @@ const decryptAES = (cipherText, key) => {
   return "";
 };
 
+const formatAddress = (address) => {
+  const prefixLength = 4;
+  const suffixLength = 4;
+
+  const truncatedAddress = `${address.slice(0, prefixLength)}...${address.slice(
+    -suffixLength
+  )}`;
+
+  return truncatedAddress;
+};
+
+let isLoading = false;
+
 class WalletData {
   Wallet;
   Balance;
@@ -42,35 +55,104 @@ class WalletData {
     if (!this.Wallet.address) {
       return null;
     }
+
     try {
       const balance = await provider.getBalance(this.Wallet.address);
-      this.Balance = ethers.utils.formatEther(balance);
+      const formatBalance = ethers.utils.formatEther(balance);
+
+      this.Balance = formatBalance;
+      const isEsixtBalanceUI =
+        document.querySelectorAll(".balance-ui").length > 0;
+
+      if (isEsixtBalanceUI) {
+        const displayBalance = document.getElementById("display-balance");
+        displayBalance.textContent = formatBalance;
+        return;
+      }
       this._loadBalanceUI();
     } catch (error) {
       console.error("Error:", error);
     }
   }
 
-  _loadBalanceUI() {
-    const balanceUI = document.createElement("div");
-    balanceUI.classList.add("balance-ui");
-
-    balanceUI.innerHTML = `
-    <div class="inner">Balance <span>${this.Balance}</span></div>
-   `;
-
-    document.body.appendChild(balanceUI);
-  }
-
   _formatWalletData(walletData) {
     return {
       privateKey: decryptAES(
         walletData[ACCOUNT_KEY],
-        walletData[PASS_WORD] + SALT_PASS
+        decryptAES(walletData[PASS_WORD], SALT_PASS) + SALT_PASS
       ),
       address: walletData[ADDRESS_KEY],
       password: decryptAES(walletData[PASS_WORD], SALT_PASS),
     };
+  }
+
+  async _onWithdraw(toAddress, amount) {
+    console.log({ amount, toAddress });
+    try {
+      const wallet = new ethers.Wallet(this.Wallet.privateKey, provider);
+
+      const amountEther = ethers.utils.parseEther(amount);
+
+      // Build the transaction object
+      const transaction = {
+        to: toAddress,
+        value: amountEther,
+      };
+
+      // Send the signed transaction
+      const txResponse = await wallet.sendTransaction(transaction);
+      if (txResponse) {
+        this._closeAllModal();
+        this._loadModalLoading("Processing...");
+      }
+
+      // Wait for the transaction to be mined
+      await txResponse.wait();
+
+      this._getBalance();
+      this._closeAllModal();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async _onTopup(amount) {
+    if (!amount || amount <= 0) {
+      alert("amount invalid");
+      return;
+    }
+    try {
+      // Connect to MetaMask wallet
+      await window.ethereum.enable();
+      const signer = provider.getSigner();
+      const accountAddress = await signer.getAddress();
+
+      // Define the recipient's address and transfer amount
+      const recipientAddress = this.Wallet.address;
+      const transferAmount = ethers.utils.parseEther(amount);
+
+      // Create a new transaction
+      const transaction = {
+        to: recipientAddress,
+        value: transferAmount,
+      };
+
+      // Send the transaction
+      const txResponse = await signer.sendTransaction(transaction);
+
+      if (txResponse) {
+        this._closeAllModal();
+        this._loadModalLoading("Processing...");
+      }
+
+      // Wait for the transaction to be mined
+      await txResponse.wait();
+
+      this._getBalance();
+      this._closeAllModal();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async _generateAccount(password) {
@@ -94,6 +176,216 @@ class WalletData {
 
     this.Wallet = this._formatWalletData(walletData);
     alert("Generate prvkey successfully!");
+  }
+
+  _closeAllModal() {
+    const wrapModals = document.querySelectorAll(".wrap-modal");
+    wrapModals.forEach((item) => {
+      item.remove();
+    });
+  }
+
+  _loadModalLoading(content) {
+    const modalLoading = document.createElement("div");
+    modalLoading.classList = "wrap-modal";
+
+    modalLoading.innerHTML = `
+      <div class="loading-content">
+        ${content}
+      </div>
+    `;
+
+    document.body.appendChild(modalLoading);
+  }
+
+  _loadBalanceUI() {
+    const balanceUI = document.createElement("div");
+    const header = document.getElementById("header");
+
+    balanceUI.classList.add("balance-ui");
+
+    balanceUI.innerHTML = `
+    <div class="inner">Balance: <span id="display-balance">${this.Balance}</span></div>
+   `;
+
+    // document.body.appendChild(balanceUI);
+    header.insertBefore(balanceUI, header.firstChild);
+  }
+
+  _loadModalWithdraw() {
+    const modalWithdraw = document.createElement("div");
+    modalWithdraw.classList.add("wrap-modal");
+    modalWithdraw.innerHTML = `
+    <div class="bg-modal" id="bg-modal-withdraw"></div>
+      <div class="modal modal-topup">
+        <div class="form-inner">
+          <p>Withdraw</p>
+          <div class="item">
+            <label>To Address</label>
+            <div class="address-input">
+              <input id="addressInput" type="text" class="input-style" />
+            </div>
+          </div>
+          <div class="item">
+            <label>Amount</label>
+            <div class="withdraw-input">
+              <input id="withdrawInput" type="text" class="input-style" />
+              <button id="max-btn">max</button>
+            </div>
+          </div>
+          <div class="item">
+            <button class="submit" id="submitWithdraw">Withdraw now</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalWithdraw);
+    // Click outside to close
+    const bgModal = document.getElementById("bg-modal-withdraw");
+    bgModal.addEventListener("click", () => {
+      modalWithdraw.remove();
+    });
+
+    const withdrawInput = document.getElementById("withdrawInput");
+    const addressInput = document.getElementById("addressInput");
+    const submitBtn = document.getElementById("submitWithdraw");
+    const maxBtn = document.getElementById("max-btn");
+
+    const isValidation = () => {
+      if (!withdrawInput.value || !addressInput.value) {
+        alert("Input is empty");
+        return false;
+      }
+      if (withdrawInput.value > this.Balance) {
+        alert("Amount can't higher your balance");
+        return false;
+      }
+
+      return true;
+    };
+
+    maxBtn.addEventListener(
+      "click",
+      async function () {
+        // Estimate the gas price
+        const gasPrice = await provider.getGasPrice();
+        const gasLimit = 40000;
+        const transactionCost = ethers.utils.formatEther(
+          gasPrice.mul(gasLimit)
+        );
+        console.log("transactionCost: ", transactionCost);
+        const showBalance = (
+          parseFloat(this.Balance) - parseFloat(transactionCost)
+        ).toString();
+        withdrawInput.value = showBalance;
+      }.bind(this)
+    );
+
+    submitBtn.addEventListener(
+      "click",
+      function () {
+        if (isValidation()) {
+          console.log("withdrawInput.value: ", withdrawInput.value);
+          this._onWithdraw(addressInput.value, withdrawInput.value);
+        }
+      }.bind(this)
+    );
+  }
+
+  _loadModalTopup() {
+    const modalTopup = document.createElement("div");
+    modalTopup.classList.add("wrap-modal");
+    modalTopup.innerHTML = `
+    <div class="bg-modal" id="bg-modal-topup"></div>
+      <div class="modal modal-topup">
+        <div class="form-inner">
+          <p>Topup</p>
+          <div class="item">
+            <label>Amount</label>
+            <div class="topup-input">
+              <input id="topupInput" type="text" class="input-style" />
+            </div>
+          </div>
+          <div class="item">
+            <button class="submit" id="submitTopup">Topup now</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalTopup);
+    // Click outside to close
+    const bgModal = document.getElementById("bg-modal-topup");
+    bgModal.addEventListener("click", () => {
+      modalTopup.remove();
+    });
+
+    const topupInput = document.getElementById("topupInput");
+    const submitBtn = document.getElementById("submitTopup");
+
+    submitBtn.addEventListener(
+      "click",
+      function () {
+        this._onTopup(topupInput.value);
+      }.bind(this)
+    );
+  }
+
+  _loadAccountDetail() {
+    if (this.Wallet) {
+      this._getBalance();
+
+      var header = document.getElementById("header");
+      const headerActions = document.createElement("div");
+      headerActions.classList.add("header-actions");
+
+      headerActions.innerHTML = `
+        <div class="inner">
+          <button class="btn-withdraw btn-default" id="btn-withdraw">Withdraw</button>
+          <button class="btn-topup btn-default" id="btn-topup">Topup</button>
+          <button class="btn-export btn-default">Export private key</button>
+          <button class="wallet-display btn-default" id="wallet-display">${formatAddress(
+            this.Wallet.address
+          )}</button>
+        </div>
+      `;
+      header.insertBefore(headerActions, header.firstChild);
+
+      const walletDisplay = document.getElementById("wallet-display");
+      const btnTopup = document.getElementById("btn-topup");
+      const btnWithdraw = document.getElementById("btn-withdraw");
+
+      btnTopup.addEventListener(
+        "click",
+        function () {
+          this._loadModalTopup();
+        }.bind(this)
+      );
+
+      btnWithdraw.addEventListener(
+        "click",
+        function () {
+          this._loadModalWithdraw();
+        }.bind(this)
+      );
+
+      walletDisplay.addEventListener(
+        "click",
+        function () {
+          navigator.clipboard
+            .writeText(this.Wallet.address)
+            .then(() => {
+              alert("Copied successfully");
+            })
+            .catch((error) => {
+              console.error("Error copying text:", error);
+            });
+        }.bind(this)
+      );
+
+      return;
+    }
   }
 
   _loadModalAccount() {
@@ -150,9 +442,6 @@ class WalletData {
         event.preventDefault();
         if (validateForm()) {
           const password = document.getElementById("passwordInput").value;
-          const confirmPassword = document.getElementById(
-            "confirmPasswordInput"
-          ).value;
 
           this._generateAccount(password);
           modalAccount.remove();
@@ -246,11 +535,8 @@ class WalletData {
 
     let walletData = JSON.parse(localStorage.getItem(`${NAME_KEY}_${GAME_ID}`));
 
-    console.log("walletData:", walletData);
-
     if (walletData) {
       this.Wallet = this._formatWalletData(walletData);
-      this._getBalance(this.Wallet.address);
       return;
     }
     this._loadModalActions();
@@ -259,4 +545,5 @@ class WalletData {
 
 let wallet = new WalletData();
 wallet.checkLogin();
+wallet._loadAccountDetail();
 // DO NOT EDIT
