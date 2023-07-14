@@ -1,8 +1,5 @@
 // DO NOT EDIT
-const gameKeyFake = "1234";
-
 const NAME_KEY = "walletData";
-
 const ACCOUNT_KEY = "ACCOUNT_CIPHER_TEXT";
 const ADDRESS_KEY = "ADDRESS_STORAGE";
 const PASS_WORD = "NUMBER_STORAGE_L2";
@@ -34,12 +31,6 @@ class WalletData {
   Wallet;
   Balance;
 
-  // walletDataEx = {
-  //   ACCOUNT_KEY: "",
-  //   ADDRESS_KEY: "",
-  //   PASS_WORD: "",
-  // };
-
   constructor() {}
 
   async _onGetWalletAddress() {
@@ -47,19 +38,38 @@ class WalletData {
     return currentAddress;
   }
 
-  _getGameKey() {
-    return gameKeyFake;
+  async _getBalance() {
+    if (!this.Wallet.address) {
+      return null;
+    }
+    try {
+      const balance = await provider.getBalance(this.Wallet.address);
+      this.Balance = ethers.utils.formatEther(balance);
+      this._loadBalanceUI();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  _loadBalanceUI() {
+    const balanceUI = document.createElement("div");
+    balanceUI.classList.add("balance-ui");
+
+    balanceUI.innerHTML = `
+    <div class="inner">Balance <span>${this.Balance}</span></div>
+   `;
+
+    document.body.appendChild(balanceUI);
   }
 
   _formatWalletData(walletData) {
-    const gameKey = this._getGameKey();
     return {
       privateKey: decryptAES(
         walletData[ACCOUNT_KEY],
         walletData[PASS_WORD] + SALT_PASS
       ),
       address: walletData[ADDRESS_KEY],
-      password: walletData[PASS_WORD],
+      password: decryptAES(walletData[PASS_WORD], SALT_PASS),
     };
   }
 
@@ -69,10 +79,7 @@ class WalletData {
     const prvKey = "0x" + id;
     const address = new ethers.Wallet(prvKey).address;
 
-    console.log("prvKey: ", prvKey);
-
     // Create game key
-    // const gameKey = this._getGameKey();
     const finalPassword = password + SALT_PASS;
     // Create hash private key
     const hashPrvKey = encryptAES(prvKey, finalPassword);
@@ -80,7 +87,7 @@ class WalletData {
     let walletData = {};
     walletData[ACCOUNT_KEY] = hashPrvKey;
     walletData[ADDRESS_KEY] = address;
-    walletData[PASS_WORD] = password;
+    walletData[PASS_WORD] = encryptAES(password, SALT_PASS);
 
     // Store on storage
     localStorage.setItem(`${NAME_KEY}_${GAME_ID}`, JSON.stringify(walletData));
@@ -90,7 +97,6 @@ class WalletData {
   }
 
   _loadModalAccount() {
-    console.log("start import modal");
     // Import Modal
     const modalAccount = document.createElement("div");
     modalAccount.classList.add("wrap-modal");
@@ -244,39 +250,13 @@ class WalletData {
 
     if (walletData) {
       this.Wallet = this._formatWalletData(walletData);
+      this._getBalance(this.Wallet.address);
       return;
     }
     this._loadModalActions();
-  }
-
-  async LoadWallet() {
-    let walletData = localStorage.getItem("walletData");
-    if (walletData == null) {
-      console.log("not exist wallet");
-      let account = web3.eth.accounts.create(web3.utils.randomHex(32));
-      let wallet = web3.eth.accounts.wallet.add(account);
-      let keystore = wallet.encrypt(web3.utils.randomHex(32));
-      walletData = {
-        account: account,
-        wallet: wallet,
-        keystore: keystore,
-      };
-      localStorage.setItem("walletData", JSON.stringify(walletData));
-    } else {
-      console.log("exist wallet");
-      walletData = JSON.parse(walletData);
-    }
-    this.Wallet = walletData;
-    this.Balance = await web3.eth.getBalance(this.Wallet.account.address);
-    console.log(
-      this.Wallet.account.address,
-      web3.utils.fromWei(this.Balance.toString()),
-      "TC"
-    );
   }
 }
 
 let wallet = new WalletData();
 wallet.checkLogin();
-// wallet.LoadWallet();
 // DO NOT EDIT
