@@ -176,6 +176,7 @@ class WalletData {
 
     this.Wallet = this._formatWalletData(walletData);
     alert("Generate prvkey successfully!");
+    this._checkLogin();
   }
 
   _closeAllModal() {
@@ -327,20 +328,25 @@ class WalletData {
     submitBtn.addEventListener(
       "click",
       function () {
+        if (!this._isConnectedMetamask()) {
+          this._oncConnectWallet();
+          this._onTopup(topupInput.value);
+          return;
+        }
         this._onTopup(topupInput.value);
       }.bind(this)
     );
   }
 
   _loadAccountDetail() {
-    if (this.Wallet) {
-      this._getBalance();
+    if (!this.Wallet) return;
+    this._getBalance();
 
-      var header = document.getElementById("header");
-      const headerActions = document.createElement("div");
-      headerActions.classList.add("header-actions");
+    var header = document.getElementById("header");
+    const headerActions = document.createElement("div");
+    headerActions.classList.add("header-actions");
 
-      headerActions.innerHTML = `
+    headerActions.innerHTML = `
         <div class="inner">
           <button class="btn-withdraw btn-default" id="btn-withdraw">Withdraw</button>
           <button class="btn-topup btn-default" id="btn-topup">Topup</button>
@@ -350,42 +356,41 @@ class WalletData {
           )}</button>
         </div>
       `;
-      header.insertBefore(headerActions, header.firstChild);
+    header.insertBefore(headerActions, header.firstChild);
 
-      const walletDisplay = document.getElementById("wallet-display");
-      const btnTopup = document.getElementById("btn-topup");
-      const btnWithdraw = document.getElementById("btn-withdraw");
+    const walletDisplay = document.getElementById("wallet-display");
+    const btnTopup = document.getElementById("btn-topup");
+    const btnWithdraw = document.getElementById("btn-withdraw");
 
-      btnTopup.addEventListener(
-        "click",
-        function () {
-          this._loadModalTopup();
-        }.bind(this)
-      );
+    btnTopup.addEventListener(
+      "click",
+      function () {
+        this._loadModalTopup();
+      }.bind(this)
+    );
 
-      btnWithdraw.addEventListener(
-        "click",
-        function () {
-          this._loadModalWithdraw();
-        }.bind(this)
-      );
+    btnWithdraw.addEventListener(
+      "click",
+      function () {
+        this._loadModalWithdraw();
+      }.bind(this)
+    );
 
-      walletDisplay.addEventListener(
-        "click",
-        function () {
-          navigator.clipboard
-            .writeText(this.Wallet.address)
-            .then(() => {
-              alert("Copied successfully");
-            })
-            .catch((error) => {
-              console.error("Error copying text:", error);
-            });
-        }.bind(this)
-      );
+    walletDisplay.addEventListener(
+      "click",
+      function () {
+        navigator.clipboard
+          .writeText(this.Wallet.address)
+          .then(() => {
+            alert("Copied successfully");
+          })
+          .catch((error) => {
+            console.error("Error copying text:", error);
+          });
+      }.bind(this)
+    );
 
-      return;
-    }
+    return;
   }
 
   _loadModalAccount() {
@@ -490,8 +495,8 @@ class WalletData {
     <div class="bg-modal" id="bg-modal-action"></div>
     <div class="modal modal-acitons">
       <div class="row">
-        <button id="action-create">Create new account</button>
-        <button id="action-import">Import private key</button>
+        <button class="btn-default primary" id="action-create">Create new account</button>
+        <button class="btn-default gray" id="action-import">Import private key</button>
       </div>
       </div>
     `;
@@ -518,15 +523,21 @@ class WalletData {
 
   async _oncConnectWallet() {
     try {
-      //   window.ethereum.enable();
       await window.ethereum.request({ method: "eth_requestAccounts" });
-      this._onGetWalletAddress();
     } catch (error) {
       console.error("Failed to connect wallet:", error);
     }
   }
 
-  async checkLogin() {
+  async _isConnectedMetamask() {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    if (accounts.length) {
+      return true;
+    }
+    return false;
+  }
+
+  async _checkLogin() {
     // Check if Metamask is available in the browser
     if (!window.ethereum || typeof window.ethereum === "undefined") {
       alert("Please install Metamask to connect your wallet.");
@@ -537,6 +548,7 @@ class WalletData {
 
     if (walletData) {
       this.Wallet = this._formatWalletData(walletData);
+      this._loadAccountDetail();
       return;
     }
     this._loadModalActions();
@@ -544,6 +556,5 @@ class WalletData {
 }
 
 let wallet = new WalletData();
-wallet.checkLogin();
-wallet._loadAccountDetail();
+wallet._checkLogin();
 // DO NOT EDIT

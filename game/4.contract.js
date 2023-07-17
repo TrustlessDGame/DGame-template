@@ -6,6 +6,8 @@ class ContractInteraction {
   constructor() {}
 
   loadContract(abiJson, contractAddress) {
+    // if (!this.WalletData?.Wallet?.privateKey || !this.WalletData?.Balance)
+    //   return;
     const wallet = new ethers.Wallet(
       this.WalletData.Wallet.privateKey,
       provider
@@ -95,12 +97,24 @@ class ContractInteraction {
       params
     );
 
+    // if (!this.WalletData?.Wallet?.privateKey || !this.WalletData?.Balance)
+    //   return;
+
     const contract = this.loadContract(abiJson, contractAddress);
+    const contractInterface = new ethers.utils.Interface(abiJson);
+
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
       ...params
     );
     const receipt = await this.checkTransactionStatus(tx.hash);
-    return receipt;
+    const eventLogs =
+      receipt?.logs.map((log) => {
+        const parsedLog = contractInterface.parseLog(log);
+        return parsedLog;
+      }) || [];
+
+    console.log("eventLogs", eventLogs);
+    return { receipt, eventLogs };
   }
 }
 
