@@ -111,17 +111,18 @@ class ContractInteraction {
     const receipt = await this.checkTransactionStatus(tx.hash);
 
     let filteredLogs = receipt?.logs;
+    let eventLogs = [];
+
     if (topic) {
       filteredLogs = receipt?.logs.filter((log) => log.topics.includes(topic));
+      eventLogs =
+        filteredLogs?.map((log) => {
+          const parsedLog = contractInterface.parseLog(log);
+          return parsedLog;
+        }) || [];
+      console.log("eventLogs", eventLogs);
     }
 
-    const eventLogs =
-      filteredLogs?.map((log) => {
-        const parsedLog = contractInterface.parseLog(log);
-        return parsedLog;
-      }) || [];
-
-    console.log("eventLogs", eventLogs);
     return { receipt, eventLogs };
   }
 }

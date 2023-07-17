@@ -69,6 +69,7 @@ class WalletData {
         displayBalance.textContent = formatBalance;
         return;
       }
+      console.log("done get balance");
       this._loadBalanceUI();
     } catch (error) {
       console.error("Error:", error);
@@ -347,6 +348,7 @@ class WalletData {
   }
 
   _loadAccountDetail() {
+    console.log("start load account");
     if (!this.Wallet) return;
 
     var header = document.getElementById("header");
@@ -555,7 +557,7 @@ class WalletData {
 
     if (walletData) {
       this.Wallet = this._formatWalletData(walletData);
-      this._getBalance();
+      await this._getBalance();
       this._loadAccountDetail();
       return;
     }
