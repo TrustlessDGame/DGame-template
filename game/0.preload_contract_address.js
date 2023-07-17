@@ -6,7 +6,7 @@ const BFS_CONTRACTT_ADDRESS = "0x0C7d44Ac4959eeB42e8D5f8792738D779a545F7E";
 const GAME_ID = 1;
 const SALT_PASS = "1234";
 
-const ASSETS = {
-    // "asset_1": "bfs://42070/0xE55EAdE1B17BbA28A80a71633aF8C15Dc2D556A5/1",
-    "asset_1": "./assets/1",
+const GAME_ASSETS = {
+    "asset_1": "bfs://42070/0xE55EAdE1B17BbA28A80a71633aF8C15Dc2D556A5/testimage.jpg",
+    // "asset_1": "./assets/1",
 }
