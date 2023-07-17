@@ -681,5 +681,5 @@ class WalletData {
 }
 
 let wallet = new WalletData();
-wallet._checkLogin();
+// wallet._checkLogin();
 // DO NOT EDIT

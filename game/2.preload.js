@@ -134,6 +134,4 @@ function concatTypedArrays(a, b) {
   return c;
 }
 
-preload();
-importUIDefault();
 // DO NOT EDIT
