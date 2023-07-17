@@ -15,6 +15,7 @@ async function Click(x, y, move) {
     GAME_CONTRACT_ADDRESS,
     null,
     0,
+    null,
     "Click(uint256, uint256, string)",
     x,
     y,
@@ -28,6 +29,7 @@ async function Reset() {
     GAME_CONTRACT_ADDRESS,
     null,
     0,
+    null,
     "Reset()"
   );
 }

@@ -87,20 +87,25 @@ class WalletData {
   }
 
   async _onWithdraw(toAddress, amount) {
-    console.log({ amount, toAddress });
     try {
       const wallet = new ethers.Wallet(this.Wallet.privateKey, provider);
-
       const amountEther = ethers.utils.parseEther(amount);
+
+      const gasLimit = 500000;
+      const gasPrice = ethers.utils.parseUnits("1", "gwei");
 
       // Build the transaction object
       const transaction = {
         to: toAddress,
         value: amountEther,
       };
+      const customGas = {
+        gasLimit,
+        gasPrice,
+      };
 
       // Send the signed transaction
-      const txResponse = await wallet.sendTransaction(transaction);
+      const txResponse = await wallet.sendTransaction(transaction, customGas);
       if (txResponse) {
         this._closeAllModal();
         this._loadModalLoading("Processing...");
@@ -270,12 +275,15 @@ class WalletData {
       "click",
       async function () {
         // Estimate the gas price
-        const gasPrice = await provider.getGasPrice();
-        const gasLimit = 40000;
+        // const gasPrice = await provider.getGasPrice();
+        // const gasLimit = 40000;
+        const gasLimit = 500000;
+        const gasPrice = ethers.utils.parseUnits("1", "gwei");
+
         const transactionCost = ethers.utils.formatEther(
           gasPrice.mul(gasLimit)
         );
-        console.log("transactionCost: ", transactionCost);
+
         const showBalance = (
           parseFloat(this.Balance) - parseFloat(transactionCost)
         ).toString();
@@ -340,7 +348,6 @@ class WalletData {
 
   _loadAccountDetail() {
     if (!this.Wallet) return;
-    this._getBalance();
 
     var header = document.getElementById("header");
     const headerActions = document.createElement("div");
@@ -548,6 +555,7 @@ class WalletData {
 
     if (walletData) {
       this.Wallet = this._formatWalletData(walletData);
+      this._getBalance();
       this._loadAccountDetail();
       return;
     }
