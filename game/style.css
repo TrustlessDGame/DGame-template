@@ -83,6 +83,16 @@ header {
 }
 
 /* Balance  */
+.balance-ui {
+  padding: 7px 10px 7px 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.balance-ui .display {
+  color: green;
+  font-weight: bold;
+  font-size: 16px;
+}
 .balance-ui .inner {
 }
 
@@ -110,13 +120,24 @@ h4.modal-title {
 
   width: 320px;
 }
+.form-inner .title-form {
+  text-align: center;
+  color: #4a4646;
+  margin-bottom: 30px;
+  font-size: 20px;
+  font-weight: bold;
+}
 .form-inner label,
 .form-inner input {
   display: block;
   width: 100%;
+  margin-bottom: 10px;
 }
 .form-inner input {
-  padding-right: 20px;
+  padding: 8px 20px 8px 5px;
+  outline: 0;
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
 }
 .form-inner .password-input {
   position: relative;
@@ -132,6 +153,15 @@ h4.modal-title {
 }
 .form-inner .submit {
   width: 100%;
+  padding: 10px;
+  background: black;
+  color: white;
+  font-weight: bold;
+  outline: 0;
+  border: 0;
+  border-radius: 5px;
+  box-shadow: 0;
+  cursor: pointer;
 }
 
 /* ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Write all your style here ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/

@@ -205,7 +205,7 @@ class WalletData {
     balanceUI.classList.add("balance-ui");
 
     balanceUI.innerHTML = `
-    <div class="inner">Balance: <span id="display-balance">${this.Balance}</span></div>
+    <div class="inner">Balance: <span class="display" id="display-balance">${this.Balance} TC</span></div>
    `;
 
     // document.body.appendChild(balanceUI);
@@ -219,7 +219,7 @@ class WalletData {
     <div class="bg-modal" id="bg-modal-withdraw"></div>
       <div class="modal modal-topup">
         <div class="form-inner">
-          <p>Withdraw</p>
+          <p class="title-form">Withdraw</p>
           <div class="item">
             <label>To Address</label>
             <div class="address-input">
@@ -234,7 +234,7 @@ class WalletData {
             </div>
           </div>
           <div class="item">
-            <button class="submit" id="submitWithdraw">Withdraw now</button>
+            <button class="submit" id="submitWithdraw">Withdraw</button>
           </div>
         </div>
       </div>
@@ -300,7 +300,7 @@ class WalletData {
     <div class="bg-modal" id="bg-modal-topup"></div>
       <div class="modal modal-topup">
         <div class="form-inner">
-          <p>Topup</p>
+          <p class="title-form">Topup</p>
           <div class="item">
             <label>Amount</label>
             <div class="topup-input">
@@ -308,7 +308,7 @@ class WalletData {
             </div>
           </div>
           <div class="item">
-            <button class="submit" id="submitTopup">Topup now</button>
+            <button class="submit" id="submitTopup">Topup</button>
           </div>
         </div>
       </div>
