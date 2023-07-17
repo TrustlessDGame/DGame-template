@@ -7,7 +7,24 @@ body {
   margin: 0;
   padding: 0;
 }
-
+.w-full {
+  width: 100%;
+}
+.mt-small {
+  margin-top: 10px;
+}
+.mt-medium {
+  margin-top: 20px;
+}
+.mt-large {
+  margin-top: 30px;
+}
+.text-bold {
+  font-weight: bold;
+}
+.text-gray {
+  color: gray;
+}
 .wrap-modal {
   position: fixed;
   top: 0;

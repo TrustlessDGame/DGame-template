@@ -38,6 +38,25 @@ const formatAddress = (address) => {
   return truncatedAddress;
 };
 
+const handleCopy = (wallet) => {
+  navigator.clipboard
+    .writeText(wallet)
+    .then(() => {
+      alert("Copied successfully");
+    })
+    .catch((error) => {
+      console.error("Error copying text:", error);
+    });
+};
+
+function isValidPrivateKey(privateKey) {
+  try {
+    const key = CryptoJS.enc.Hex.parse(privateKey);
+    return key.sigBytes === 32;
+  } catch (error) {
+    return false;
+  }
+}
 let isLoading = false;
 
 class WalletData {
@@ -69,7 +88,7 @@ class WalletData {
         displayBalance.textContent = formatBalance;
         return;
       }
-      console.log("done get balance");
+
       this._loadBalanceUI();
     } catch (error) {
       console.error("Error:", error);
@@ -129,7 +148,6 @@ class WalletData {
     }
     try {
       // Connect to MetaMask wallet
-      await window.ethereum.enable();
       const signer = provider.getSigner();
       const accountAddress = await signer.getAddress();
 
@@ -160,6 +178,54 @@ class WalletData {
       console.log(error);
     }
   }
+
+  _onExportPrivateKey(password) {
+    const walletData = JSON.parse(
+      localStorage.getItem(`${NAME_KEY}_${GAME_ID}`)
+    );
+    const prvKey = decryptAES(walletData[ACCOUNT_KEY], password + SALT_PASS);
+    if (!prvKey) {
+      alert("Password incorrect!");
+      return;
+    }
+    const formatPrvKey = formatAddress(prvKey);
+    const modalAccount = document.getElementById("modal-account");
+    modalAccount.innerHTML = `
+    <div class="show-key">
+      Your private key: <span class="text-gray">${formatPrvKey}</span>
+    </div>
+    <div class="action">
+      <button class="btn-default primary w-full mt-medium" id="btn-copy-prvKey">Click to copy</button>
+    </div>
+    `;
+
+    document
+      .getElementById("btn-copy-prvKey")
+      .addEventListener("click", function () {
+        handleCopy(prvKey);
+      });
+  }
+
+  _onImportPrivateKey = (prvKey, password) => {
+    const address = new ethers.Wallet(prvKey).address;
+    // Create game key
+    const finalPassword = password + SALT_PASS;
+    // Create hash private key
+    const hashPrvKey = encryptAES(prvKey, finalPassword);
+
+    let walletData = {
+      [ACCOUNT_KEY]: hashPrvKey,
+      [ADDRESS_KEY]: address,
+      [PASS_WORD]: encryptAES(password, SALT_PASS),
+    };
+
+    // Store on storage
+    localStorage.setItem(`${NAME_KEY}_${GAME_ID}`, JSON.stringify(walletData));
+
+    this.Wallet = this._formatWalletData(walletData);
+    alert("Import prvkey successfully!");
+    this._checkLogin();
+  };
 
   async _generateAccount(password) {
     // Create new private key
@@ -336,19 +402,28 @@ class WalletData {
 
     submitBtn.addEventListener(
       "click",
-      function () {
-        if (!this._isConnectedMetamask()) {
-          this._oncConnectWallet();
-          this._onTopup(topupInput.value);
+      async function () {
+        const isConnectWallet = await this._isConnectedMetamask();
+
+        if (!isConnectWallet) {
+          (async () => {
+            await this._oncConnectWallet();
+            await checkAndSwitchNetwork();
+            window.ethereum.on("chainChanged", (chainId) => {
+              if (chainId) {
+                this._onTopup(topupInput.value);
+              }
+            });
+          })();
           return;
         }
+        console.log("aaaaaaa");
         this._onTopup(topupInput.value);
       }.bind(this)
     );
   }
 
   _loadAccountDetail() {
-    console.log("start load account");
     if (!this.Wallet) return;
 
     var header = document.getElementById("header");
@@ -359,7 +434,7 @@ class WalletData {
         <div class="inner">
           <button class="btn-withdraw btn-default" id="btn-withdraw">Withdraw</button>
           <button class="btn-topup btn-default" id="btn-topup">Topup</button>
-          <button class="btn-export btn-default">Export private key</button>
+          <button class="btn-export btn-default" id="btn-export">Export private key</button>
           <button class="wallet-display btn-default" id="wallet-display">${formatAddress(
             this.Wallet.address
           )}</button>
@@ -370,6 +445,14 @@ class WalletData {
     const walletDisplay = document.getElementById("wallet-display");
     const btnTopup = document.getElementById("btn-topup");
     const btnWithdraw = document.getElementById("btn-withdraw");
+    const btnExport = document.getElementById("btn-export");
+
+    btnExport.addEventListener(
+      "click",
+      function () {
+        this._loadModalAccount("export");
+      }.bind(this)
+    );
 
     btnTopup.addEventListener(
       "click",
@@ -388,30 +471,35 @@ class WalletData {
     walletDisplay.addEventListener(
       "click",
       function () {
-        navigator.clipboard
-          .writeText(this.Wallet.address)
-          .then(() => {
-            alert("Copied successfully");
-          })
-          .catch((error) => {
-            console.error("Error copying text:", error);
-          });
+        handleCopy(this.Wallet.address);
       }.bind(this)
     );
 
     return;
   }
 
-  _loadModalAccount() {
+  _loadModalAccount(type) {
     // Import Modal
     const modalAccount = document.createElement("div");
     modalAccount.classList.add("wrap-modal");
 
     modalAccount.innerHTML = `
     <div class="bg-modal" id="bg-modal-account"></div>
-    <div class="modal modal-account">
+    <div class="modal modal-account" id="modal-account">
       <form autocomplete="off" class="form-account">
         <div class="form-inner">
+          ${
+            type === "import"
+              ? `
+          <div class="item">
+          <label>Your private key</label>
+          <div class="password-input">
+            <input id="keyInput" type="text" />
+          </div>
+        </div>
+          `
+              : ""
+          }
           <div class="item">
             <label>Password</label>
             <div class="password-input">
@@ -426,8 +514,8 @@ class WalletData {
               <i id="confirmPasswordToggle" class="toggle-icon fa fa-eye"></i>
             </div>
           </div>
+          <button id="submitButton" class="submit" type="submit">Submit</button>
         </div>
-        <button id="submitButton" type="submit">Submit</button>
       </form>
     </div>`;
 
@@ -440,6 +528,7 @@ class WalletData {
     });
 
     // Handle form's action
+    const keyInput = document.getElementById("keyInput");
     const passwordInput = document.getElementById("passwordInput");
     const confirmPasswordInput = document.getElementById(
       "confirmPasswordInput"
@@ -455,15 +544,32 @@ class WalletData {
       function (event) {
         event.preventDefault();
         if (validateForm()) {
-          const password = document.getElementById("passwordInput").value;
+          const password = passwordInput?.value;
 
-          this._generateAccount(password);
+          switch (type) {
+            case "create-new":
+              this._generateAccount(password);
+              break;
+            case "export":
+              this._onExportPrivateKey(password);
+              break;
+            case "import":
+              const privateKey = keyInput?.value.trim();
+              this._onImportPrivateKey(privateKey, password);
+              break;
+            default:
+              break;
+          }
           modalAccount.remove();
         }
       }.bind(this)
     );
 
     function validateForm() {
+      if (type === "import" && !isValidPrivateKey(keyInput?.value.trim())) {
+        alert("Malformed private key or empty");
+        return;
+      }
       if (passwordInput.value === "" || confirmPasswordInput.value === "") {
         alert("Please enter both passwords");
         return false;
@@ -513,6 +619,7 @@ class WalletData {
     document.body.appendChild(modalActions);
 
     const actionCreate = document.getElementById("action-create");
+    const actionImport = document.getElementById("action-import");
     const bgModal = document.getElementById("bg-modal-action");
 
     // Click outside to close
@@ -524,7 +631,15 @@ class WalletData {
     actionCreate.addEventListener(
       "click",
       function () {
-        this._loadModalAccount();
+        this._loadModalAccount("create-new");
+        modalActions.remove();
+      }.bind(this)
+    );
+
+    actionImport.addEventListener(
+      "click",
+      function () {
+        this._loadModalAccount("import");
         modalActions.remove();
       }.bind(this)
     );

@@ -1,5 +1,6 @@
 // DO NOT EDIT
 let provider;
+const chainIdDefault = "0x" + Number(42070).toString(16);
 
 function importUIDefault() {
   const header = document.createElement("header");
@@ -14,8 +15,42 @@ async function preload() {
   }
   provider = new ethers.providers.Web3Provider(window.ethereum);
 
+  // Check and switch network
+  checkAndSwitchNetwork();
+
   //TODO: preload assets
   await preloadASSETS();
+}
+
+async function checkAndSwitchNetwork() {
+  if (typeof window.ethereum === "undefined") {
+    console.error("Please install MetaMask to use this feature.");
+    return;
+  }
+
+  const accounts = await window.ethereum.request({ method: "eth_accounts" });
+  if (accounts.length === 0) {
+    console.error("Please log in to MetaMask to use this feature.");
+    return;
+  }
+
+  const currentChainId = await window.ethereum.request({
+    method: "eth_chainId",
+  });
+
+  if (currentChainId !== chainIdDefault) {
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chainIdDefault }],
+      });
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+    } catch (error) {
+      console.error("Failed to switch network:", error);
+    }
+  } else {
+    console.log("Already on NOS network.");
+  }
 }
 
 async function preloadASSETS() {
