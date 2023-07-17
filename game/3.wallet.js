@@ -549,6 +549,7 @@ class WalletData {
           switch (type) {
             case "create-new":
               this._generateAccount(password);
+              modalAccount.remove();
               break;
             case "export":
               this._onExportPrivateKey(password);
@@ -556,11 +557,11 @@ class WalletData {
             case "import":
               const privateKey = keyInput?.value.trim();
               this._onImportPrivateKey(privateKey, password);
+              modalAccount.remove();
               break;
             default:
               break;
           }
-          modalAccount.remove();
         }
       }.bind(this)
     );

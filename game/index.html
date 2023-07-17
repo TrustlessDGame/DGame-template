@@ -67,7 +67,7 @@
       (async () => {
         await preload();
         await importUIDefault();
-        const isLogin = await wallet._checkLogin();
+        await wallet._checkLogin();
 
         const newScript = document.createElement("script");
         newScript.setAttribute("src", "5.gameplay.js");
