@@ -54,9 +54,9 @@ async function checkAndSwitchNetwork() {
 }
 
 async function preloadASSETS() {
-  if (Object.keys(ASSETS).length > 0) {
-    for (const key in ASSETS) {
-      const value = ASSETS[key];
+  if (Object.keys(GAME_ASSETS).length > 0) {
+    for (const key in GAME_ASSETS) {
+      const value = GAME_ASSETS[key];
       if (value.indexOf("bfs://") > -1) {
         try {
           // bfs://chainid/address/file_name
@@ -87,12 +87,24 @@ async function preloadASSETS() {
           } while (nextChunk != -1);
           if (dataBytesArray.length > 0) {
             const dataString = toString(dataBytesArray);
-            console.log(dataString);
-            const blob = dataURItoBlob(dataString);
-            console.log(blob);
-            const gzipFile = URL.createObjectURL(blob);
-            console.log(gzipFile);
-            ASSETS[key] = gzipFile;
+            const blobFile = URL.createObjectURL(dataURItoBlob(dataString));
+            fetch(blobFile).then((res) => {
+              // try gunzip file
+              res.arrayBuffer().then((e) => {
+                window.gunzip(new Uint8Array(e), (e1, n) => {
+                  if (e1 == null) {
+                    GAME_ASSETS[key] = URL.createObjectURL(
+                      new Blob([new Uint8Array(n, 0, n.length)])
+                    );
+                  } else {
+                    GAME_ASSETS[key] = blobFile;
+                  }
+                  // let img = document.createElement("img");
+                  // img.setAttribute("src", GAME_ASSETS[key]);
+                  // document.body.append(img);
+                });
+              });
+            });
           }
         } catch (e) {
           console.log(e);
