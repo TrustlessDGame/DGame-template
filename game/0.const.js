@@ -5,7 +5,7 @@ const SALT_PASS = "1234";
 const BFS_CONTRACTT_ADDRESS = "0x0C7d44Ac4959eeB42e8D5f8792738D779a545F7E";
 const CHAIN_ID = 42070;
 
-// Contract interaction
+// name CONTRACT_INTERACTION_BASIC
 let provider;
 const chainIdDefault = "0x" + Number(CHAIN_ID).toString(16);
 
