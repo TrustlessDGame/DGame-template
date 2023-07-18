@@ -2,6 +2,7 @@
 let provider;
 const chainIdDefault = "0x" + Number(42070).toString(16);
 
+// preload asset and lib
 function importUIDefault() {
     const header = document.createElement("header");
     header.id = "header";
@@ -181,8 +182,6 @@ function isValidPrivateKey(privateKey) {
         return false;
     }
 }
-
-let isLoading = false;
 
 class WalletData {
     Wallet;
@@ -754,7 +753,7 @@ class WalletData {
 
 let wallet = new WalletData();
 
-// contract interaction
+// Contract interaction
 class ContractInteraction {
     provider;
     WalletData;
