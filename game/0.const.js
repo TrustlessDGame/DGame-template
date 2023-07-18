@@ -25,9 +25,6 @@ async function preload() {
 
     // Check and switch network
     checkAndSwitchNetwork();
-
-    //TODO: preload assets
-    await preloadASSETS();
 }
 
 async function checkAndSwitchNetwork() {
