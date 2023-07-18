@@ -991,12 +991,7 @@ class ContractInteraction {
       params
     );
 
-    const minTransactionCost = getTransactionCost();
-
-    if (
-      !this.WalletData?.Wallet?.privateKey ||
-      this.WalletData?.Balance < minTransactionCost
-    ) {
+    if (!this.WalletData?.Wallet?.privateKey || !this.WalletData?.Balance) {
       return;
     }
 
@@ -1012,7 +1007,8 @@ class ContractInteraction {
     let eventLogs = {};
 
     if (topics && topics.length > 0) {
-      for (let topic in topics) {
+      for (let i = 0; i < topics.length; i++) {
+        const topic = topics[i];
         filteredLogs = receipt?.logs.filter((log) =>
           log.topics.includes(topic)
         );
