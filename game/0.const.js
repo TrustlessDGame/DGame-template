@@ -18,7 +18,7 @@ function importUIDefault() {
 
 async function preload() {
   if (!window.ethereum) {
-    alert("Please install metamask");
+    loadNoti("warning", "Please install metamask!");
     return;
   }
   provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -168,9 +168,9 @@ const decryptAES = (cipherText, key) => {
   return "";
 };
 
-const formatAddress = (address) => {
-  const prefixLength = 4;
-  const suffixLength = 4;
+const formatAddress = (address, prefix, suffix) => {
+  const prefixLength = prefix || 4;
+  const suffixLength = suffix || 4;
 
   const truncatedAddress = `${address.slice(0, prefixLength)}...${address.slice(
     -suffixLength
@@ -179,11 +179,31 @@ const formatAddress = (address) => {
   return truncatedAddress;
 };
 
+const loadNoti = (type, text, time = 2500) => {
+  const noti = document.createElement("div");
+  noti.classList.add(`wrap-noti`);
+  noti.classList.add(type);
+  noti.innerHTML = `
+        <div class="inner">
+        ${text}
+        </div>
+    `;
+
+  document.body.appendChild(noti);
+
+  setTimeout(() => {
+    noti.classList.add("close");
+  }, time);
+  setTimeout(() => {
+    noti.remove();
+  }, time + 1500);
+};
+
 const handleCopy = (wallet) => {
   navigator.clipboard
     .writeText(wallet)
     .then(() => {
-      alert("Copied successfully");
+      loadNoti("success", "Copied successfully!");
     })
     .catch((error) => {
       console.error("Error copying text:", error);
@@ -266,10 +286,12 @@ class WalletData {
       const transaction = {
         to: toAddress,
         value: amountEther,
+        ...customGas,
       };
+      console.log("transaction: ", transaction);
 
       // Send the signed transaction
-      const txResponse = await wallet.sendTransaction(transaction, customGas);
+      const txResponse = await wallet.sendTransaction(transaction);
       if (txResponse) {
         this._closeAllModal();
         this._loadModalLoading("Processing...");
@@ -287,7 +309,7 @@ class WalletData {
 
   async _onTopup(amount) {
     if (!amount || amount <= 0) {
-      alert("amount invalid");
+      loadNoti("warning", "Amount invalid!");
       return;
     }
     try {
@@ -316,6 +338,8 @@ class WalletData {
       // Wait for the transaction to be mined
       await txResponse.wait();
 
+      loadNoti("success", "Topup successfully!");
+
       this._getBalance();
       this._closeAllModal();
     } catch (error) {
@@ -323,30 +347,30 @@ class WalletData {
     }
   }
 
-  _onExportPrivateKey(password) {
+  _onExportPrivateKey(password, isNew = false) {
     const walletData = JSON.parse(
       localStorage.getItem(`${NAME_KEY}_${GAME_ID}`)
     );
     const prvKey = decryptAES(walletData[ACCOUNT_KEY], password + SALT_PASS);
     if (!prvKey) {
-      alert("Password incorrect!");
+      loadNoti("warning", "Password incorrect! Please type again", 3500);
       return;
     }
-    const formatPrvKey = formatAddress(prvKey);
+    const formatPrvKey = formatAddress(prvKey, 6, 6);
     const modalAccount = document.getElementById("modal-account");
     modalAccount.innerHTML = `
     <div class="form-inner">
-        <div class="item">
-            <input value="${formatPrvKey}"/>
-            <button class="btn-default primary w-full mt-medium" id="btn-copy-prvKey">Click to copy</button>
+        <p class="title-form">Your private key</p>
+        ${
+          isNew
+            ? `<div class="note">Please copy your private key and save it somewhere safe for you, we will not be responsible if you lose your private key.</div>`
+            : ""
+        }
+        <div class="item-input">
+            <input disabled={true} value="${formatPrvKey}"/>
+            <button class="child primary w-full" id="btn-copy-prvKey">Copy</button>
         </div>
     </div>
-    // <div class="show-key">
-    //   Your private key: <span class="text-gray">${formatPrvKey}</span>
-    // </div>
-    // <div class="action">
-    //   <button class="btn-default primary w-full mt-medium" id="btn-copy-prvKey">Click to copy</button>
-    // </div>
     `;
 
     document
@@ -373,7 +397,7 @@ class WalletData {
     localStorage.setItem(`${NAME_KEY}_${GAME_ID}`, JSON.stringify(walletData));
 
     this.Wallet = this._formatWalletData(walletData);
-    alert("Import prvkey successfully!");
+    loadNoti("success", "Import prvkey successfully!", 2500);
     this._checkLogin();
   };
 
@@ -397,7 +421,8 @@ class WalletData {
     localStorage.setItem(`${NAME_KEY}_${GAME_ID}`, JSON.stringify(walletData));
 
     this.Wallet = this._formatWalletData(walletData);
-    alert("Generate prvkey successfully!");
+
+    loadNoti("success", "Generate private key successfully!");
     this._checkLogin();
   }
 
@@ -428,11 +453,23 @@ class WalletData {
     balanceUI.classList.add("balance-ui");
 
     balanceUI.innerHTML = `
-    <div class="inner">Balance: <span class="display" id="display-balance">${this.Balance} TC</span></div>
+        <button class="btn-default gray">Balance: <span id="display-balance">${
+          this.Balance
+        }</span> TC</butotn>
+        <button class="wallet-display btn-default" id="wallet-display">${formatAddress(
+          this.Wallet.address
+        )}</button>  
    `;
 
     // document.body.appendChild(balanceUI);
     header.insertBefore(balanceUI, header.firstChild);
+    const walletDisplay = document.getElementById("wallet-display");
+    walletDisplay.addEventListener(
+      "click",
+      function () {
+        handleCopy(this.Wallet.address);
+      }.bind(this)
+    );
   }
 
   _loadModalWithdraw() {
@@ -451,9 +488,9 @@ class WalletData {
           </div>
           <div class="item">
             <label>Amount</label>
-            <div class="withdraw-input">
+            <div class="withdraw-input item-input">
               <input id="withdrawInput" type="text" class="input-style" />
-              <button id="max-btn" class="max-btn">max</button>
+              <button id="max-btn" class="max-btn child">max</button>
             </div>
           </div>
           <div class="item">
@@ -477,12 +514,17 @@ class WalletData {
 
     const isValidation = () => {
       if (!withdrawInput.value || !addressInput.value) {
-        alert("Input is empty");
+        loadNoti("warning", "Input is empty!");
         return false;
       }
       if (withdrawInput.value > this.Balance) {
-        alert("Amount can't higher your balance");
+        loadNoti("warning", "Amount can't higher your balance!");
         return false;
+      }
+      const transactionCost = getTransactionCost();
+      if (transactionCost > this.Balance) {
+        loadNoti("warning", "Your balance is not enough");
+        return;
       }
 
       return true;
@@ -494,8 +536,15 @@ class WalletData {
         const transactionCost = getTransactionCost();
 
         const showBalance = (
-          parseFloat(this.Balance) - parseFloat(transactionCost)
+          parseFloat(this.Balance) -
+          (parseFloat(transactionCost) + parseFloat(transactionCost) / 3)
         ).toString();
+
+        if (parseFloat(showBalance) < 0) {
+          loadNoti("warning", "Your balance is not enough");
+          return;
+        }
+
         withdrawInput.value = showBalance;
       }.bind(this)
     );
@@ -504,7 +553,6 @@ class WalletData {
       "click",
       function () {
         if (isValidation()) {
-          console.log("withdrawInput.value: ", withdrawInput.value);
           this._onWithdraw(addressInput.value, withdrawInput.value);
         }
       }.bind(this)
@@ -519,15 +567,17 @@ class WalletData {
       <div class="modal modal-topup">
         <div class="form-inner">
           <p class="title-form">Topup</p>
-          <div class="item">
-            <label>Amount</label>
-            <div class="topup-input">
-              <input id="topupInput" type="text" class="input-style" />
+          <form autocomplete="off">
+            <div class="item">
+                <label>Amount</label>
+                <div class="topup-input">
+                    <input id="topupInput" type="text" class="input-style" />
+                </div>
             </div>
-          </div>
-          <div class="item">
-            <button class="submit" id="submitTopup">Topup</button>
-          </div>
+            <div class="item">
+            <button type="submit" class="submit" id="submitTopup">Topup</button>
+            </div>
+          </form>
         </div>
       </div>
     `;
@@ -544,7 +594,8 @@ class WalletData {
 
     submitBtn.addEventListener(
       "click",
-      async function () {
+      async function (event) {
+        event.preventDefault();
         const isConnectWallet = await this._isConnectedMetamask();
 
         if (!isConnectWallet) {
@@ -559,32 +610,47 @@ class WalletData {
           })();
           return;
         }
-        console.log("aaaaaaa");
+
         this._onTopup(topupInput.value);
       }.bind(this)
     );
   }
 
   _loadAccountDetail() {
-    if (!this.Wallet) return;
+    if (document.querySelector(".header-actions")) {
+      document.querySelector(".header-actions").remove();
+    }
 
-    var header = document.getElementById("header");
+    const header = document.getElementById("header");
     const headerActions = document.createElement("div");
-    headerActions.classList.add("header-actions");
 
+    if (!this.Wallet) {
+      headerActions.classList.add("header-actions");
+      headerActions.classList.add("end");
+      headerActions.innerHTML = `
+        <div class="inner">
+          <button class="btn-login btn-default" id="btn-login"">Login</button>
+        </div>
+      `;
+      header.insertBefore(headerActions, header.firstChild);
+      document.getElementById("btn-login").addEventListener(
+        "click",
+        function () {
+          this._loadModalActions();
+        }.bind(this)
+      );
+      return;
+    }
+    headerActions.classList.add("header-actions");
     headerActions.innerHTML = `
         <div class="inner">
           <button class="btn-withdraw btn-default" id="btn-withdraw">Withdraw</button>
           <button class="btn-topup btn-default" id="btn-topup">Topup</button>
           <button class="btn-export btn-default" id="btn-export">Export private key</button>
-          <button class="wallet-display btn-default" id="wallet-display">${formatAddress(
-            this.Wallet.address
-          )}</button>
         </div>
       `;
     header.insertBefore(headerActions, header.firstChild);
 
-    const walletDisplay = document.getElementById("wallet-display");
     const btnTopup = document.getElementById("btn-topup");
     const btnWithdraw = document.getElementById("btn-withdraw");
     const btnExport = document.getElementById("btn-export");
@@ -607,13 +673,6 @@ class WalletData {
       "click",
       function () {
         this._loadModalWithdraw();
-      }.bind(this)
-    );
-
-    walletDisplay.addEventListener(
-      "click",
-      function () {
-        handleCopy(this.Wallet.address);
       }.bind(this)
     );
 
@@ -708,7 +767,7 @@ class WalletData {
           switch (type) {
             case "create-new":
               this._generateAccount(password);
-              modalAccount.remove();
+              this._onExportPrivateKey(password, true);
               break;
             case "export":
               this._onExportPrivateKey(password);
@@ -727,7 +786,7 @@ class WalletData {
 
     function validateForm() {
       if (type === "import" && !isValidPrivateKey(keyInput?.value.trim())) {
-        alert("Malformed private key or empty");
+        loadNoti("success", "Malformed private key or empty!");
         return;
       }
       if (passwordInput.value === "" || confirmPasswordInput.value === "") {
@@ -822,9 +881,14 @@ class WalletData {
   }
 
   async _checkLogin() {
+    this._loadAccountDetail();
     // Check if Metamask is available in the browser
     if (!window.ethereum || typeof window.ethereum === "undefined") {
-      alert("Please install Metamask to connect your wallet.");
+      loadNoti(
+        "warning",
+        "Please install Metamask to connect your wallet!",
+        4000
+      );
       return;
     }
 
