@@ -266,27 +266,14 @@
 </head>
 <body>
 <!--- DO NOT EDIT THIS SECTION -->
+<script src="1.develop_data.js"></script>
+<script src="2.gameplay.js"></script>
 <script>
-    async function addScript() {
-        let newScript = document.createElement("script");
-        newScript.setAttribute("src", "1.develop_data.js");
-        document.body.appendChild(newScript);
-
-        newScript = document.createElement("script");
-        newScript.setAttribute("src", "2.gameplay.js");
-        document.body.appendChild(newScript);
-    }
-
     (async () => {
         await preload();
         await importUIDefault();
         await wallet._checkLogin();
-
-        await addScript();
-
-        setTimeout(async function () {
-            await preloadASSETS();
-        }, 100)
+        await preloadASSETS();
     })();
 </script>
 
