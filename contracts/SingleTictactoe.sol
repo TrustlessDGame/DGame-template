@@ -1,6 +1,7 @@
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SimpleTicTacToe {
+    event ClickEvent(uint256 x, uint256 y, string move);
 
     string[3][3] public playboard;
     uint256 public totalMove;
@@ -20,6 +21,7 @@ contract SimpleTicTacToe {
     function Click(uint256 x, uint256 y, string memory move) public {
         playboard[x][y] = move;
         totalMove ++;
+        emit ClickEvent(x, y, move);
     }
 
     function PlayboardView() public view returns (string memory result) {
