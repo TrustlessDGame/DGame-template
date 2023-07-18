@@ -805,7 +805,7 @@ class ContractInteraction {
         return await contract.functions[methodWithParams.replace(/\s/g, "")](...params);
     }
 
-    async Send(abiJson, contractAddress, nonce, gas, topic, // For get event log
+    async Send(abiJson, contractAddress, nonce, gas, topics, // For get event log
                methodWithParams, ...params) {
         console.log("Send tx to contract", contractAddress, "method", methodWithParams, "with params", params);
 
@@ -820,15 +820,17 @@ class ContractInteraction {
         const receipt = await this.checkTransactionStatus(tx.hash);
 
         let filteredLogs = receipt?.logs;
-        let eventLogs = [];
+        let eventLogs = {};
 
-        if (topic) {
-            filteredLogs = receipt?.logs.filter((log) => log.topics.includes(topic));
-            eventLogs = filteredLogs?.map((log) => {
-                const parsedLog = contractInterface.parseLog(log);
-                return parsedLog;
-            }) || [];
-            console.log("eventLogs", eventLogs);
+        if (topics && topics.length > 0) {
+            for (let topic in topics) {
+                filteredLogs = receipt?.logs.filter((log) => log.topics.includes(topic));
+                eventLogs[topic] = filteredLogs?.map((log) => {
+                    const parsedLog = contractInterface.parseLog(log);
+                    return parsedLog;
+                }) || [];
+                console.log("eventLogs", eventLogs);
+            }
         }
 
         return {receipt, eventLogs};
