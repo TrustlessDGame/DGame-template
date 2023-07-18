@@ -2,36 +2,15 @@
 
 // Call Contract
 async function PlayboardView() {
-    return await contractInteraction.Call(
-        GAME_CONTRACT_ABI_INTERFACE_JSON,
-        GAME_CONTRACT_ADDRESS,
-        "PlayboardView()"
-    );
+    return await contractInteraction.Call(GAME_CONTRACT_ABI_INTERFACE_JSON, GAME_CONTRACT_ADDRESS, "PlayboardView()");
 }
 
 async function Click(x, y, move) {
-    return await contractInteraction.Send(
-        GAME_CONTRACT_ABI_INTERFACE_JSON,
-        GAME_CONTRACT_ADDRESS,
-        null,
-        0,
-        null,
-        "Click(uint256, uint256, string)",
-        x,
-        y,
-        move
-    );
+    return await contractInteraction.Send(GAME_CONTRACT_ABI_INTERFACE_JSON, GAME_CONTRACT_ADDRESS, null, 0, null, "Click(uint256, uint256, string)", x, y, move);
 }
 
 async function Reset() {
-    return await contractInteraction.Send(
-        GAME_CONTRACT_ABI_INTERFACE_JSON,
-        GAME_CONTRACT_ADDRESS,
-        null,
-        0,
-        null,
-        "Reset()"
-    );
+    return await contractInteraction.Send(GAME_CONTRACT_ABI_INTERFACE_JSON, GAME_CONTRACT_ADDRESS, null, 0, null, "Reset()");
 }
 
 // Game play
@@ -55,7 +34,7 @@ main.innerHTML = `
             </section>
             <section class="display announcer hide"></section>
             <section class="controls">
-                <button id="reset">Reset</button>
+                <button id="reset">Start New Game</button>
             </section>
             <section id='processing' class='hide' style='color: #f0f0f0'>Processing...</section>
           </div>`;
@@ -75,16 +54,7 @@ const PLAYERX_WON = "PLAYERX_WON";
 const PLAYERO_WON = "PLAYERO_WON";
 const TIE = "TIE";
 
-const winningConditions = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-];
+const winningConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6],];
 
 async function handleResultValidation() {
     let roundWon = false;
@@ -188,7 +158,19 @@ const ResetGame = async () => {
     showProcessing();
     try {
         await Reset();
-
+        tiles.forEach((tile, index) => {
+            tile.addEventListener("click", async function (e) {
+                try {
+                    showProcessing();
+                    const tx = await Click(Math.floor(index / 3), index % 3, currentPlayer);
+                    console.log(await PlayboardView());
+                    userAction(tile, index);
+                } catch (e) {
+                    alert(e);
+                }
+                hideProcessing();
+            });
+        });
         resetBoard();
     } catch (e) {
         alert(e);
@@ -196,21 +178,6 @@ const ResetGame = async () => {
     hideProcessing();
 };
 
-ResetGame().then((r) => {
-    tiles.forEach((tile, index) => {
-        tile.addEventListener("click", async function (e) {
-            try {
-                showProcessing();
-                const tx = await Click(Math.floor(index / 3), index % 3, currentPlayer);
-                console.log(await PlayboardView());
-                userAction(tile, index);
-            } catch (e) {
-                alert(e);
-            }
-            hideProcessing();
-        });
-    });
-});
 resetButton.addEventListener("click", async function () {
     await ResetGame();
 });
