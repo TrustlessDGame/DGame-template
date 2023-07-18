@@ -1,6 +1,4 @@
 // DO NOT EDIT
-const GAME_ID = 1;
-const SALT_PASS = "1234";
 // ABI json Interface of base contract erc20, erc721, erc1155, bfs
 const GAME_TOKEN_ERC20_ABI_INTERFACE_JSON = [{
     "anonymous": false, "inputs": [{
@@ -516,5 +514,9 @@ const BFS_CONTRACTT_ABI_INTERFACE_JSON = [{
         "internalType": "bytes", "name": "_data", "type": "bytes"
     }], "name": "store", "outputs": [], "stateMutability": "nonpayable", "type": "function"
 }]
+// Contract data
+const GAME_ID = 1;
+const SALT_PASS = "1234";
 const BFS_CONTRACTT_ADDRESS = "0x0C7d44Ac4959eeB42e8D5f8792738D779a545F7E";
+const CHAIN_ID = 42070;
 // DO NOT EDIT
