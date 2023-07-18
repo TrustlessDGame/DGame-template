@@ -799,18 +799,6 @@ class ContractInteraction {
         });
     }
 
-    async signAndSendTx(tx) {
-        const wallet = new ethers.Wallet(this.WalletData.Wallet.privateKey, provider);
-        const signedTx = await wallet.signTransaction(tx);
-
-        if (signedTx.rawTransaction != null) {
-            let sentTx = await this.provider.sendTransaction(signedTx.rawTransaction);
-
-            sentTx = await sentTx.wait(); // Wait for transaction confirmation
-            return sentTx;
-        }
-    }
-
     async Call(abiJson, contractAddress, methodWithParams, ...params) {
         console.log("Call contract", contractAddress, "method", methodWithParams, "with params", params);
         const contract = this.loadContract(abiJson, contractAddress);
