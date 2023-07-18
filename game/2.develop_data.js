@@ -12,9 +12,17 @@ const GAME_CONTRACT_ABI_INTERFACE_JSON = [{
         "internalType": "string", "name": "move", "type": "string"
     }], "name": "Click", "outputs": [], "stateMutability": "nonpayable", "type": "function"
 }, {
-    "inputs": [], "name": "Reset", "outputs": [], "stateMutability": "nonpayable", "type": "function"
-}, {
     "inputs": [], "stateMutability": "nonpayable", "type": "constructor"
+}, {
+    "anonymous": false, "inputs": [{
+        "indexed": false, "internalType": "uint256", "name": "x", "type": "uint256"
+    }, {
+        "indexed": false, "internalType": "uint256", "name": "y", "type": "uint256"
+    }, {
+        "indexed": false, "internalType": "string", "name": "move", "type": "string"
+    }], "name": "ClickEvent", "type": "event"
+}, {
+    "inputs": [], "name": "Reset", "outputs": [], "stateMutability": "nonpayable", "type": "function"
 }, {
     "inputs": [{
         "internalType": "uint256", "name": "", "type": "uint256"

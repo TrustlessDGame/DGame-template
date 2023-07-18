@@ -6,7 +6,7 @@ async function PlayboardView() {
 }
 
 async function Click(x, y, move) {
-    return await contractInteraction.Send(GAME_CONTRACT_ABI_INTERFACE_JSON, GAME_CONTRACT_ADDRESS, null, 0, null, "Click(uint256, uint256, string)", x, y, move);
+    return await contractInteraction.Send(GAME_CONTRACT_ABI_INTERFACE_JSON, GAME_CONTRACT_ADDRESS, null, 0, ["0x247fdb3d737d7239a071e1583ace9da194e0c99484c0904c744473140a6e7095"], "Click(uint256, uint256, string)", x, y, move);
 }
 
 async function Reset() {
