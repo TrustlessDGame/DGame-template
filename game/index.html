@@ -82,10 +82,12 @@
     <script src="3.develop_gameplay.js"></script>
     <script>
       (async () => {
+        wallet._loadModalLoading("Wait for join game...");
         await preload();
         await importUIDefault();
         await wallet._checkLogin();
         await preloadASSETS();
+        wallet._closeAllModal();
         if (typeof(window.callBackLoadResourcesComplete) == "function") {
             window.callBackLoadResourcesComplete();
         }
