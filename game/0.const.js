@@ -34,7 +34,6 @@ function importUIDefault() {
 }
 
 async function preload() {
-  console.log("preload");
   if (!window.ethereum) {
     loadNoti("warning", "Please install metamask!");
     return;
@@ -271,7 +270,6 @@ class WalletData {
       const isEsixtBalanceUI =
         document.querySelectorAll(".balance-ui").length > 0;
 
-      console.log("formatBalance: ", formatBalance);
       if (isEsixtBalanceUI) {
         const displayBalance = document.getElementById("display-balance");
         displayBalance.textContent = Number(formatBalance).toFixed(6);
