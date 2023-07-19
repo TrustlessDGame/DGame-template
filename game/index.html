@@ -61,6 +61,9 @@
         await importUIDefault();
         await wallet._checkLogin();
         await preloadASSETS();
+        if (typeof(window.callBackLoadResourcesComplete) == "function") {
+            window.callBackLoadResourcesComplete();
+        }
       })();
     </script>
 
