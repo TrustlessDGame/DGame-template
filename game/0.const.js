@@ -81,10 +81,11 @@ async function preloadData(key, value, ext = ".gz") {
     // split bfs path;
     const bfsPathArray = value.split("/");
     const _ = bfsPathArray[2]; // chain ID
-    const address = bfsPathArray[3]; // address
-    const fileName = bfsPathArray[4]; // file_name
+    const bfsAddr = bfsPathArray[3]; // bfs
+    const address = bfsPathArray[4]; // address
+    const fileName = bfsPathArray[5]; // file_name
     let contract = new ethers.Contract(
-        BFS_CONTRACTT_ADDRESS,
+        bfsAddr,
         BFS_CONTRACTT_ABI_INTERFACE_JSON,
         provider
     );
