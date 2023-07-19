@@ -244,7 +244,6 @@ class WalletData {
     if (!this.Wallet.address) {
       return null;
     }
-
     try {
       const balance = await provider.getBalance(this.Wallet.address);
       const formatBalance = ethers.utils.formatEther(balance);
@@ -255,7 +254,7 @@ class WalletData {
 
       if (isEsixtBalanceUI) {
         const displayBalance = document.getElementById("display-balance");
-        displayBalance.textContent = formatBalance;
+        displayBalance.textContent = Number(formatBalance).toFixed(6);
         return;
       }
 
@@ -995,7 +994,13 @@ class ContractInteraction {
       params
     );
 
-    if (!this.WalletData?.Wallet?.privateKey || !this.WalletData?.Balance) {
+    if (!wallet?.Wallet?.privateKey || !wallet?.Balance) {
+      return;
+    }
+    const transactionCost = getTransactionCost();
+
+    if (Number(transactionCost) > Number(wallet?.Balance)) {
+      loadNoti("warning", "Your balance is not enough", 3000);
       return;
     }
 
@@ -1006,6 +1011,7 @@ class ContractInteraction {
       ...params
     );
     const receipt = await this.checkTransactionStatus(tx.hash);
+    wallet._getBalance();
 
     let filteredLogs = receipt?.logs;
     let eventLogs = {};
