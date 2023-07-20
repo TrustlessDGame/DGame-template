@@ -452,7 +452,7 @@ class WalletData {
     localStorage.setItem(`${NAME_KEY}_${GAME_ID}`, JSON.stringify(walletData));
 
     this.Wallet = this._formatWalletData(walletData);
-    loadNoti("success", "Import prvkey successfully!", 2500);
+    loadNoti("success", "Import private key successfully!", 2500);
     this._checkLogin();
   };
 
