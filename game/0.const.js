@@ -271,6 +271,9 @@ const handleCopy = (wallet) => {
 };
 
 const isValidPrivateKey = (privateKey) => {
+  if(privateKey.includes("0x")) {
+    privateKey = privateKey.slice(2)
+  }
   try {
     const key = CryptoJS.enc.Hex.parse(privateKey);
     return key.sigBytes === 32;
