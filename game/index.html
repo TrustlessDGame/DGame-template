@@ -76,19 +76,21 @@
     <script src="2.develop_data.js"></script>
     <script src="3.develop_gameplay.js"></script>
     <script>
-      (async () => {
-        wallet._loadModalLoading("Wait a moment...");
-        await preload();
-        await importUIDefault();
-        await wallet._checkLogin();
-        await preloadASSETS();
-        setTimeout(() => {
-          wallet._closeAllModal();
-        }, 1000);
-        if (typeof window.callBackLoadResourcesComplete == "function") {
-          window.callBackLoadResourcesComplete();
-        }
-      })();
+      wallet._loadModalLoading("Wait a moment...");
+      setTimeout(function () {
+        (async () => {
+          await preload();
+          await importUIDefault();
+          await wallet._checkLogin();
+          await preloadASSETS();
+          setTimeout(() => {
+            wallet._closeAllModal();
+          }, 1000);
+          if (typeof window.callBackLoadResourcesComplete == "function") {
+            window.callBackLoadResourcesComplete();
+          }
+        })();
+      }, 3000);
     </script>
 
     <!--- DO NOT EDIT THIS SECTION -->
