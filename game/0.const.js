@@ -3,7 +3,7 @@
 const GAME_ID = 1;
 const SALT_PASS = "1234";
 const CHAIN_ID = 42070;
-const LIB_ASSETS = {};
+let LIB_ASSETS = {};
 
 // name CONTRACT_INTERACTION_BASIC
 let provider;
@@ -91,6 +91,7 @@ async function preloadData(key, value, ext = ".gz") {
     let dataBytesArray = new Uint8Array();
     let nextChunk = 0;
     do {
+        console.log("Get data", value, "chunk #", parseInt(nextChunk));
         const chunkData = await contract.load(
             address,
             fileName + ext,
@@ -128,7 +129,7 @@ async function preloadLIBASSETS() {
 
 async function preloadASSETS() {
 
-  const gameAssetLocal = localStorage.getItem("GAME_ASSETS");
+  const gameAssetLocal = localStorage.getItem("GAME_ASSETS_" + GAME_ID);
   if(gameAssetLocal) {
     GAME_ASSETS = {...JSON.parse(gameAssetLocal)}
     await preloadLIBASSETS();
@@ -141,7 +142,7 @@ async function preloadASSETS() {
       const value = GAME_ASSETS[key];
       if (value.indexOf("bfs://") > -1) {
         promises.push(
-          preloadData(key, value, ".gz")
+          preloadData(key, value, "")
             .then((dataBytesArray) => {
               if (dataBytesArray.length > 0) {
                 const dataString = toString(dataBytesArray);
@@ -174,7 +175,7 @@ async function preloadASSETS() {
     }
 
     await Promise.all(promises);
-    localStorage.setItem("GAME_ASSETS", JSON.stringify(GAME_ASSETS))
+    localStorage.setItem("GAME_ASSETS_" + GAME_ID, JSON.stringify(GAME_ASSETS))
   }
   await preloadLIBASSETS();
 }
