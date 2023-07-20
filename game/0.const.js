@@ -3,7 +3,7 @@
 const GAME_ID = 1;
 const SALT_PASS = "1234";
 const CHAIN_ID = 42070;
-const LIB_ASSETS = {};
+let LIB_ASSETS = {};
 
 // name CONTRACT_INTERACTION_BASIC
 let provider;

@@ -1,5 +1,5 @@
 // YOUR_ASSETS
-const GAME_ASSETS = {
+let GAME_ASSETS = {
   asset_1: "./assets/1",
 };
 // YOUR GAME CONTRACT ABI JSON INTERFACE

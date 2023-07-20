@@ -76,9 +76,9 @@
     <script src="2.develop_data.js"></script>
     <script src="3.develop_gameplay.js"></script>
     <script>
-      wallet._loadModalLoading("Wait a moment...");
       setTimeout(function () {
         (async () => {
+          wallet._loadModalLoading("Wait a moment...");
           await preload();
           await importUIDefault();
           await wallet._checkLogin();
