@@ -2,8 +2,8 @@
 // Contract data
 const GAME_ID = 1;
 const SALT_PASS = "1234";
-const BFS_CONTRACTT_ADDRESS = "0x0C7d44Ac4959eeB42e8D5f8792738D779a545F7E";
 const CHAIN_ID = 42070;
+const LIB_ASSETS = {};
 
 // name CONTRACT_INTERACTION_BASIC
 let provider;
@@ -74,38 +74,66 @@ async function checkAndSwitchNetwork() {
   }
 }
 
+async function preloadData(key, value, ext = ".gz") {
+    // bfs://chainid/address/file_name
+    console.log("asset bfs", key, value);
+    // split bfs path;
+    const bfsPathArray = value.split("/");
+    const _ = bfsPathArray[2]; // chain ID
+    const bfsAddr = bfsPathArray[3]; // bfs
+    const address = bfsPathArray[4]; // address
+    const fileName = bfsPathArray[5]; // file_name
+    let contract = new ethers.Contract(
+        bfsAddr,
+        BFS_CONTRACTT_ABI_INTERFACE_JSON,
+        provider
+    );
+    let dataBytesArray = new Uint8Array();
+    let nextChunk = 0;
+    do {
+        const chunkData = await contract.load(
+            address,
+            fileName + ext,
+            nextChunk
+        );
+        nextChunk = chunkData[1];
+        if (chunkData[0].length > 0) {
+            const data = ethers.utils.arrayify(chunkData[0]);
+            dataBytesArray = concatTypedArrays(dataBytesArray, data);
+        }
+    } while (nextChunk != -1);
+    return dataBytesArray;
+}
+
+async function preloadLIBASSETS() {
+  if (LIB_ASSETS != null && Object.keys(LIB_ASSETS).length > 0) {
+    for (const key in LIB_ASSETS) {
+      const value = LIB_ASSETS[key];
+      if (value.indexOf("bfs://") > -1) {
+        try {
+          const dataBytesArray = await preloadData(key, value, "");
+          if (dataBytesArray.length > 0) {
+            const dataString = toString(dataBytesArray);
+            await getGzipFile(dataURItoBlob(dataString));
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        console.log("asset", key, value);
+      }
+    }
+  }
+}
+
+
 async function preloadASSETS() {
-  if (Object.keys(GAME_ASSETS).length > 0) {
+  if (GAME_ASSETS != null && Object.keys(GAME_ASSETS).length > 0) {
     for (const key in GAME_ASSETS) {
       const value = GAME_ASSETS[key];
       if (value.indexOf("bfs://") > -1) {
         try {
-          // bfs://chainid/address/file_name
-          console.log("asset bfs", key, value);
-          // split bfs path;
-          const bfsPathArray = value.split("/");
-          const _ = bfsPathArray[2]; // chain ID
-          const address = bfsPathArray[3]; // address
-          const fileName = bfsPathArray[4]; // file_name
-          let contract = new ethers.Contract(
-            BFS_CONTRACTT_ADDRESS,
-            BFS_CONTRACTT_ABI_INTERFACE_JSON,
-            provider
-          );
-          let dataBytesArray = new Uint8Array();
-          let nextChunk = 0;
-          do {
-            const chunkData = await contract.load(
-              address,
-              fileName + ".gz",
-              nextChunk
-            );
-            nextChunk = chunkData[1];
-            if (chunkData[0].length > 0) {
-              const data = ethers.utils.arrayify(chunkData[0]);
-              dataBytesArray = concatTypedArrays(dataBytesArray, data);
-            }
-          } while (nextChunk != -1);
+          const dataBytesArray = await preloadData(key, value, ".gz");
           if (dataBytesArray.length > 0) {
             const dataString = toString(dataBytesArray);
             const blobFile = URL.createObjectURL(dataURItoBlob(dataString));
@@ -120,9 +148,9 @@ async function preloadASSETS() {
                   } else {
                     GAME_ASSETS[key] = blobFile;
                   }
-                  // let img = document.createElement("img");
-                  // img.setAttribute("src", GAME_ASSETS[key]);
-                  // document.body.append(img);
+                  /*let img = document.createElement("img");
+                  img.setAttribute("src", GAME_ASSETS[key]);
+                  document.body.append(img);*/
                 });
               });
             });
@@ -135,6 +163,7 @@ async function preloadASSETS() {
       }
     }
   }
+  await preloadLIBASSETS();
 }
 
 const toString = (bytes) => {

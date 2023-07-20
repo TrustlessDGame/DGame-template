@@ -1,6 +1,6 @@
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Add your code here ↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 window.callBackLoadResourcesComplete = () => {
-    console.log("Complate load assets", GAME_ASSETS);
+    console.log("Complete load resources", GAME_ASSETS);
 }
 // Call Contract
 async function PlayboardView() {
