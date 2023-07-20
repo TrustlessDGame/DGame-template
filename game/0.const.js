@@ -128,14 +128,6 @@ async function preloadLIBASSETS() {
 }
 
 async function preloadASSETS() {
-
-  const gameAssetLocal = localStorage.getItem("GAME_ASSETS_" + GAME_ID);
-  if(gameAssetLocal) {
-    GAME_ASSETS = {...JSON.parse(gameAssetLocal)}
-    await preloadLIBASSETS();
-    return;
-  }
-
   if (GAME_ASSETS != null && Object.keys(GAME_ASSETS).length > 0) {
     const promises = []; 
     for (const key in GAME_ASSETS) {
@@ -175,7 +167,7 @@ async function preloadASSETS() {
     }
 
     await Promise.all(promises);
-    localStorage.setItem("GAME_ASSETS_" + GAME_ID, JSON.stringify(GAME_ASSETS))
+
   }
   await preloadLIBASSETS();
 }
