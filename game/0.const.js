@@ -126,45 +126,59 @@ async function preloadLIBASSETS() {
   }
 }
 
-
 async function preloadASSETS() {
+
+  const gameAssetLocal = localStorage.getItem("GAME_ASSETS");
+  if(gameAssetLocal) {
+    GAME_ASSETS = {...JSON.parse(gameAssetLocal)}
+    await preloadLIBASSETS();
+    return;
+  }
+
   if (GAME_ASSETS != null && Object.keys(GAME_ASSETS).length > 0) {
+    const promises = []; 
     for (const key in GAME_ASSETS) {
       const value = GAME_ASSETS[key];
       if (value.indexOf("bfs://") > -1) {
-        try {
-          const dataBytesArray = await preloadData(key, value, ".gz");
-          if (dataBytesArray.length > 0) {
-            const dataString = toString(dataBytesArray);
-            const blobFile = URL.createObjectURL(dataURItoBlob(dataString));
-            fetch(blobFile).then((res) => {
-              // try gunzip file
-              res.arrayBuffer().then((e) => {
-                window.gunzip(new Uint8Array(e), (e1, n) => {
-                  if (e1 == null) {
-                    GAME_ASSETS[key] = URL.createObjectURL(
-                      new Blob([new Uint8Array(n, 0, n.length)])
-                    );
-                  } else {
-                    GAME_ASSETS[key] = blobFile;
-                  }
-                  /*let img = document.createElement("img");
-                  img.setAttribute("src", GAME_ASSETS[key]);
-                  document.body.append(img);*/
-                });
-              });
-            });
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        promises.push(
+          preloadData(key, value, ".gz")
+            .then((dataBytesArray) => {
+              if (dataBytesArray.length > 0) {
+                const dataString = toString(dataBytesArray);
+                const blobFile = URL.createObjectURL(dataURItoBlob(dataString));
+                return fetch(blobFile)
+                  .then((res) => res.arrayBuffer())
+                  .then((e) => {
+                    return new Promise((resolve, reject) => {
+                      window.gunzip(new Uint8Array(e), (e1, n) => {
+                        if (e1 == null) {
+                          GAME_ASSETS[key] = URL.createObjectURL(
+                            new Blob([new Uint8Array(n, 0, n.length)])
+                          );
+                        } else {
+                          GAME_ASSETS[key] = blobFile;
+                        }
+                        resolve();
+                      });
+                    });
+                  });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            })
+        );
       } else {
         console.log("asset", key, value);
       }
     }
+
+    await Promise.all(promises);
+    localStorage.setItem("GAME_ASSETS", JSON.stringify(GAME_ASSETS))
   }
   await preloadLIBASSETS();
 }
+
 
 const toString = (bytes) => {
   var result = "";
@@ -478,9 +492,15 @@ class WalletData {
     });
   }
 
+  _closeLoading() {
+    const modalLoading = document.getElementById("modal-loading");
+    modalLoading.remove();
+  }
+
   _loadModalLoading(content) {
     const modalLoading = document.createElement("div");
     modalLoading.classList = "wrap-modal";
+    modalLoading.id = "modal-loading";
 
     modalLoading.innerHTML = `
       <div class="loading-content">
