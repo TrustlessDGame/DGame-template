@@ -142,7 +142,7 @@ async function preloadASSETS() {
       const value = GAME_ASSETS[key];
       if (value.indexOf("bfs://") > -1) {
         promises.push(
-          preloadData(key, value, ".gz")
+          preloadData(key, value, "")
             .then((dataBytesArray) => {
               if (dataBytesArray.length > 0) {
                 const dataString = toString(dataBytesArray);
