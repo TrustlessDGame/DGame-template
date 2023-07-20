@@ -76,9 +76,9 @@
     <script src="2.develop_data.js"></script>
     <script src="3.develop_gameplay.js"></script>
     <script>
-      const intervalId = setInterval(function () {
+      const intervalPreloadDataId = setInterval(function () {
         if (typeof(wallet) != "undefined") {
-          clearInterval(intervalId);
+          clearInterval(intervalPreloadDataId);
           (async () => {
             wallet._loadModalLoading("Wait a moment...");
             await preload();
