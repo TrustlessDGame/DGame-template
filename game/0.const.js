@@ -91,6 +91,7 @@ async function preloadData(key, value, ext = ".gz") {
     let dataBytesArray = new Uint8Array();
     let nextChunk = 0;
     do {
+        console.log("Get data", value, "chunk #", parseInt(nextChunk));
         const chunkData = await contract.load(
             address,
             fileName + ext,
@@ -128,7 +129,7 @@ async function preloadLIBASSETS() {
 
 async function preloadASSETS() {
 
-  const gameAssetLocal = localStorage.getItem("GAME_ASSETS");
+  const gameAssetLocal = localStorage.getItem("GAME_ASSETS_" + GAME_ID);
   if(gameAssetLocal) {
     GAME_ASSETS = {...JSON.parse(gameAssetLocal)}
     await preloadLIBASSETS();
@@ -174,7 +175,7 @@ async function preloadASSETS() {
     }
 
     await Promise.all(promises);
-    localStorage.setItem("GAME_ASSETS", JSON.stringify(GAME_ASSETS))
+    localStorage.setItem("GAME_ASSETS_" + GAME_ID, JSON.stringify(GAME_ASSETS))
   }
   await preloadLIBASSETS();
 }
