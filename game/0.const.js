@@ -315,6 +315,7 @@ class WalletData {
       // Wait for the transaction to be mined
       await txResponse.wait();
 
+      loadNoti("success", "Withdraw successfully!");
       this._getBalance();
       this._closeAllModal();
     } catch (error) {
@@ -454,7 +455,10 @@ class WalletData {
 
     modalLoading.innerHTML = `
       <div class="loading-content">
-        ${content}
+        <div class="inner">
+          <?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(241, 242, 243); display: block; shape-rendering: auto; animation-play-state: running; animation-delay: 0s;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g style="animation-play-state: running; animation-delay: 0s;"> <circle cx="60" cy="50" r="4" fill="#ffffff" style="animation-play-state: running; animation-delay: 0s;"> <animate attributeName="cx" repeatCount="indefinite" dur="1s" values="95;35" keyTimes="0;1" begin="-0.67s" style="animation-play-state: running; animation-delay: 0s;"></animate> <animate attributeName="fill-opacity" repeatCount="indefinite" dur="1s" values="0;1;1" keyTimes="0;0.2;1" begin="-0.67s" style="animation-play-state: running; animation-delay: 0s;"></animate> </circle> <circle cx="60" cy="50" r="4" fill="#ffffff" style="animation-play-state: running; animation-delay: 0s;"> <animate attributeName="cx" repeatCount="indefinite" dur="1s" values="95;35" keyTimes="0;1" begin="-0.33s" style="animation-play-state: running; animation-delay: 0s;"></animate> <animate attributeName="fill-opacity" repeatCount="indefinite" dur="1s" values="0;1;1" keyTimes="0;0.2;1" begin="-0.33s" style="animation-play-state: running; animation-delay: 0s;"></animate> </circle> <circle cx="60" cy="50" r="4" fill="#ffffff" style="animation-play-state: running; animation-delay: 0s;"> <animate attributeName="cx" repeatCount="indefinite" dur="1s" values="95;35" keyTimes="0;1" begin="0s" style="animation-play-state: running; animation-delay: 0s;"></animate> <animate attributeName="fill-opacity" repeatCount="indefinite" dur="1s" values="0;1;1" keyTimes="0;0.2;1" begin="0s" style="animation-play-state: running; animation-delay: 0s;"></animate> </circle></g><g transform="translate(-15 0)" style="animation-play-state: running; animation-delay: 0s;"> <path d="M50 50L20 50A30 30 0 0 0 80 50Z" fill="#f3f3f3" transform="rotate(90 50 50)" style="animation-play-state: running; animation-delay: 0s;"></path> <path d="M50 50L20 50A30 30 0 0 0 80 50Z" fill="#f3f3f3" style="animation-play-state: running; animation-delay: 0s;"> <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;45 50 50;0 50 50" keyTimes="0;0.5;1" style="animation-play-state: running; animation-delay: 0s;"></animateTransform> </path> <path d="M50 50L20 50A30 30 0 0 1 80 50Z" fill="#f3f3f3" style="animation-play-state: running; animation-delay: 0s;"> <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;-45 50 50;0 50 50" keyTimes="0;0.5;1" style="animation-play-state: running; animation-delay: 0s;"></animateTransform> </path></g></svg>
+        <div class="block">${content}</div>
+        </div>
       </div>
     `;
 
@@ -598,7 +602,6 @@ class WalletData {
         </svg></button>
         <div class="form-inner">
           <p class="title-form">Topup</p>
-          <div id="qrcode" class="qrcode"></div>
           <div class="item-input">
           <input disabled={true} value="${formatAddress(
             this.Wallet.privateKey,
@@ -637,7 +640,7 @@ class WalletData {
         modalTopup.remove();
       });
 
-    new QRCode(document.getElementById("qrcode"), this.Wallet.address);
+    
 
     // Click outside to close
     const bgModal = document.getElementById("bg-modal-topup");
