@@ -2,10 +2,10 @@
 // Contract data
 const GAME_ID = 1;
 const SALT_PASS = "1234";
-const CHAIN_ID = 22213;
-const RPC = "https://tc-node.trustless.computer";
-const RPC_EXPLORER = "https://explorer.trustless.computer";
-const NETWORK_NAME = "Trustless Computer";
+const CHAIN_ID = 42213;
+const RPC = "https://node.l2.trustless.computer/";
+const RPC_EXPLORER = "https://explorer.l2.trustless.computer/";
+const NETWORK_NAME = "NOS";
 const CURRENCY_SYMBOL = "TC";
 let LIB_ASSETS = {};
 
@@ -164,15 +164,15 @@ async function preloadASSETS() {
                     return new Promise((resolve, reject) => {
                       window.gunzip(new Uint8Array(e), (e1, n) => {
                         if (e1 == null) {
-                            let options = {};
-                            if (dataString.includes('svg+xml')) {
-                                options = {
-                                    type: 'image/svg+xml'
-                                }
-                            }
-                            GAME_ASSETS[key] = URL.createObjectURL(
-                                new Blob([new Uint8Array(n, 0, n.length)], options)
-                            );
+                          let options = {};
+                          if (dataString.includes("svg+xml")) {
+                            options = {
+                              type: "image/svg+xml",
+                            };
+                          }
+                          GAME_ASSETS[key] = URL.createObjectURL(
+                            new Blob([new Uint8Array(n, 0, n.length)], options)
+                          );
                         } else {
                           GAME_ASSETS[key] = blobFile;
                         }
