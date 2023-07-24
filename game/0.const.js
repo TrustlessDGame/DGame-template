@@ -164,9 +164,15 @@ async function preloadASSETS() {
                     return new Promise((resolve, reject) => {
                       window.gunzip(new Uint8Array(e), (e1, n) => {
                         if (e1 == null) {
-                          GAME_ASSETS[key] = URL.createObjectURL(
-                            new Blob([new Uint8Array(n, 0, n.length)])
-                          );
+                            let options = {};
+                            if (dataString.includes('svg+xml')) {
+                                options = {
+                                    type: 'image/svg+xml'
+                                }
+                            }
+                            GAME_ASSETS[key] = URL.createObjectURL(
+                                new Blob([new Uint8Array(n, 0, n.length)], options)
+                            );
                         } else {
                           GAME_ASSETS[key] = blobFile;
                         }
