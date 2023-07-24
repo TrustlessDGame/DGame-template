@@ -1184,12 +1184,13 @@ class ContractInteraction {
       params
     );
 
-    if (!wallet?.Wallet?.privateKey || !wallet?.Balance) {
+    if (!wallet?.Wallet?.privateKey) {
+      wallet._loadModalAccount("create-new");
       return;
     }
     const transactionCost = getTransactionCost();
 
-    if (Number(transactionCost) > Number(wallet?.Balance)) {
+    if (!wallet?.Balance || Number(transactionCost) > Number(wallet?.Balance)) {
       loadNoti("warning", "Your balance is not enough", 3000);
       wallet._loadModalTopup();
       return;
