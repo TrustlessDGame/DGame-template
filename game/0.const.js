@@ -1191,6 +1191,7 @@ class ContractInteraction {
 
     if (Number(transactionCost) > Number(wallet?.Balance)) {
       loadNoti("warning", "Your balance is not enough", 3000);
+      wallet._loadModalTopup();
       return;
     }
 
