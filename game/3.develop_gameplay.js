@@ -4,11 +4,13 @@ window.callBackLoadResourcesComplete = () => {
 }
 // Call Contract
 async function PlayboardView() {
-  return await contractInteraction.Call(
+  const rs = await contractInteraction.Call(
     GAME_CONTRACT_ABI_INTERFACE_JSON,
     GAME_CONTRACT_ADDRESS,
     "PlayboardView()"
   );
+  console.log("RS: ",rs)
+  return rs;
 }
 
 async function Click(x, y, move) {

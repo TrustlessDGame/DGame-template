@@ -1191,8 +1191,19 @@ class ContractInteraction {
     const contract = this.loadContract(abiJson, contractAddress);
     const contractInterface = new ethers.utils.Interface(abiJson);
 
+    const gasEstimate = await contract.estimateGas[
+      methodWithParams.replace(/\s/g, "")
+    ](...params);
+    const gasPrice = ethers.utils.parseUnits("20", "gwei");
+    const gasLimit = parseInt(gasEstimate * 1.1);
+
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
-      ...params
+      ...params,
+      {
+        gasLimit: gas || gasLimit,
+        gasPrice,
+        ...(nonce && { nonce }),
+      }
     );
     const receipt = await this.checkTransactionStatus(tx.hash);
     wallet._getBalance();
