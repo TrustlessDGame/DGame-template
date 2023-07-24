@@ -47,7 +47,6 @@ async function preload() {
 }
 
 function getScreenWidth() {
-  // Lấy chiều rộng của cửa sổ
   const windowWidth =
     window.innerWidth ||
     document.documentElement.clientWidth ||
@@ -969,7 +968,7 @@ class WalletData {
 
     function validateForm() {
       if (type === "import" && !isValidPrivateKey(keyInput?.value.trim())) {
-        loadNoti("success", "Malformed private key or empty!");
+        loadNoti("warning", "Malformed private key or empty!");
         return;
       }
       if (passwordInput.value === "" || confirmPasswordInput.value === "") {
