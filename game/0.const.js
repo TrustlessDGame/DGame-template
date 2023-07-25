@@ -690,6 +690,7 @@ class WalletData {
         </svg></button>
         <div class="form-inner">
           <p class="title-form">Topup</p>
+          <div id="qrcode" class="qrcode"></div>
           <div class="item-input">
           <input disabled={true} value="${formatAddress(
             this.Wallet.address,
@@ -721,6 +722,14 @@ class WalletData {
         handleCopy(this.Wallet.address);
       }.bind(this)
     );
+
+    document
+      .getElementById("close-modal")
+      .addEventListener("click", function () {
+        modalTopup.remove();
+      });
+
+    new QRCode(document.getElementById("qrcode"), this.Wallet.address);
 
     document
       .getElementById("close-modal")
@@ -1082,7 +1091,7 @@ class WalletData {
     this._loadAccountDetail();
     // Check if Metamask is available in the browser
     if (!window.ethereum || typeof window.ethereum === "undefined") {
-      return;
+      return; 
     }
 
     let walletData = JSON.parse(localStorage.getItem(`${NAME_KEY}_${GAME_ID}`));
@@ -1101,7 +1110,7 @@ let wallet = new WalletData();
 
 // Contract interaction
 class ContractInteraction {
-  provider;
+  provider;  
   WalletData;
 
   constructor() {}
