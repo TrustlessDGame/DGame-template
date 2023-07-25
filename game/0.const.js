@@ -723,12 +723,6 @@ class WalletData {
       }.bind(this)
     );
 
-    document
-      .getElementById("close-modal")
-      .addEventListener("click", function () {
-        modalTopup.remove();
-      });
-
     new QRCode(document.getElementById("qrcode"), this.Wallet.address);
 
     document
