@@ -723,12 +723,6 @@ class WalletData {
       }.bind(this)
     );
 
-    document
-      .getElementById("close-modal")
-      .addEventListener("click", function () {
-        modalTopup.remove();
-      });
-
     new QRCode(document.getElementById("qrcode"), this.Wallet.address);
 
     document
@@ -1091,7 +1085,7 @@ class WalletData {
     this._loadAccountDetail();
     // Check if Metamask is available in the browser
     if (!window.ethereum || typeof window.ethereum === "undefined") {
-      return; 
+      return;
     }
 
     let walletData = JSON.parse(localStorage.getItem(`${NAME_KEY}_${GAME_ID}`));
@@ -1110,7 +1104,7 @@ let wallet = new WalletData();
 
 // Contract interaction
 class ContractInteraction {
-  provider;  
+  provider;
   WalletData;
 
   constructor() {}
@@ -1211,8 +1205,8 @@ class ContractInteraction {
     const gasEstimate = await contract.estimateGas[
       methodWithParams.replace(/\s/g, "")
     ](...params);
-    const gasPrice = ethers.utils.parseUnits("20", "gwei");
-    const gasLimit = parseInt(gasEstimate * 1.1);
+    const gasPrice = ethers.utils.parseUnits("1.0", "gwei");
+    const gasLimit = parseInt(gasEstimate);
 
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
       ...params,
