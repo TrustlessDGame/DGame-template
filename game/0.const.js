@@ -496,6 +496,7 @@ class WalletData {
     this.Wallet = this._formatWalletData(walletData);
     loadNoti("success", "Import private key successfully!", 2500);
     this._checkLogin();
+    window.location.reload();
   };
 
   async _generateAccount(password) {
