@@ -2,10 +2,10 @@
 // Contract data
 const GAME_ID = 1;
 const SALT_PASS = "1234";
-const CHAIN_ID = 42070;
-const RPC = "https://l2-node.regtest.trustless.computer/";
-const RPC_EXPLORER = "https://nos-explorer.regtest.trustless.computer/";
-const NETWORK_NAME = "NOS (Testnet)";
+const CHAIN_ID = 42213;
+const RPC = "https://node.l2.trustless.computer/";
+const RPC_EXPLORER = "https://explorer.l2.trustless.computer/";
+const NETWORK_NAME = "NOS";
 const CURRENCY_SYMBOL = "TC";
 let LIB_ASSETS = {};
 
