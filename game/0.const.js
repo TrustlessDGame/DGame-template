@@ -1211,8 +1211,8 @@ class ContractInteraction {
     const gasEstimate = await contract.estimateGas[
       methodWithParams.replace(/\s/g, "")
     ](...params);
-    const gasPrice = ethers.utils.parseUnits("20", "gwei");
-    const gasLimit = parseInt(gasEstimate * 1.1);
+    const gasPrice = ethers.utils.parseUnits("1.0", "gwei");
+    const gasLimit = parseInt(gasEstimate);
 
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
       ...params,
