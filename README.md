@@ -14,3 +14,4 @@ Questions? Join our community https://discord.gg/ZkECdDPs
 - [x] cryptojsmin@4.1.1.js
 - [x] pixijsmin@7.2.4.js
 - [x] snarkjsmin@0.6.10.js
+- [x] qrcodejsmin@1.0.0.js
