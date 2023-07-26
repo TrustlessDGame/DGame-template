@@ -690,7 +690,7 @@ class WalletData {
           <path d="M12.96 4.45998L11.54 3.03998L7.99998 6.58998L4.45998 3.03998L3.03998 4.45998L6.58998 7.99998L3.03998 11.54L4.45998 12.96L7.99998 9.40998L11.54 12.96L12.96 11.54L9.40998 7.99998L12.96 4.45998Z" fill="white"/>
         </svg></button>
         <div class="form-inner">
-          <p class="title-form">Topup</p>
+          <p class="title-form">Topup TC</p>
           <div id="qrcode" class="qrcode"></div>
           <div class="item-input">
           <input disabled={true} value="${formatAddress(
@@ -702,7 +702,7 @@ class WalletData {
       </div>
           <form autocomplete="off" class="mt-medium">
             <div class="item">
-                <label>Amount</label>
+                <label>Amount TC</label>
                 <div class="topup-input">
                     <input id="topupInput" value="1" type="text" class="input-style" />
                 </div>
