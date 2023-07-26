@@ -1149,6 +1149,7 @@ class WalletData {
       return;
     }
 
+   try {
     let walletData = JSON.parse(localStorage.getItem(`${NAME_KEY}_${GAME_ID}`));
 
     if (walletData) {
@@ -1157,8 +1158,11 @@ class WalletData {
       this._loadAccountDetail();
       return;
     }
-    console.log("3");
     this._loadModalActions();
+   } catch (error) {
+      console.log(error);
+      loadNoti("warning", error);
+   }
   }
 }
 
@@ -1305,3 +1309,4 @@ class ContractInteraction {
 let contractInteraction = new ContractInteraction();
 contractInteraction.WalletData = wallet;
 contractInteraction.provider = provider;
+
