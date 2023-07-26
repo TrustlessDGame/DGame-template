@@ -56,11 +56,14 @@ function getScreenWidth() {
 
 async function checkAndSwitchNetwork() {
   const sW = getScreenWidth();
-  if (sW > 800) {
-    if (typeof window.ethereum === "undefined") {
-      loadNoti("warning", "Please install MetaMask on browser");
-      return;
-    }
+
+  if(sW < 800) {
+    return;
+  }
+
+  if (typeof window.ethereum === "undefined") {
+    loadNoti("warning", "Please install MetaMask on browser");
+    return;
   }
 
   const currentChainId = await window.ethereum.request({
@@ -521,6 +524,7 @@ class WalletData {
     this.Wallet = this._formatWalletData(walletData);
 
     loadNoti("success", "Generate private key successfully!");
+
     await checkAndSwitchNetwork();
     this._checkLogin();
   }
