@@ -92,8 +92,8 @@
               window.callBackLoadResourcesComplete();
             }
             } catch (error) {
-              loadNoti("warning", error);
               wallet._closeLoading();
+              console.log(error)
             }
           })();
         }
