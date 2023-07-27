@@ -59,7 +59,7 @@ main.innerHTML = `
             </section>
             <section class="display announcer hide"></section>
             <section class="controls">
-                <button id="reset"><img width="120" height="120" src=${GAME_ASSETS.asset_1}></button>
+                <button id="reset"><img width="120" height="70" src=${GAME_ASSETS.asset_1}></button>
             </section>
             <section id='processing' class='hide' style='color: #f0f0f0'>Processing...</section>
           </div>`;
