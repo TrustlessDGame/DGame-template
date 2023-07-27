@@ -15,3 +15,5 @@ Questions? Join our community [here]
 - [x] pixijsmin@7.2.4.js
 - [x] snarkjsmin@0.6.10.js
 - [x] qrcodejsmin@1.0.0.js
+- [x] bigintegerjsmin@1.6.51.js
+- [x] sweetalertjsmin@2.1.2.js
