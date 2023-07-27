@@ -1,4 +1,4 @@
-# Launch your art on Bitcoin
+# Launch your game on Bitcoin
 
 ## A simple template for launching your game on Bitcoin
 
