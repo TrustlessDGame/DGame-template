@@ -1,12 +1,12 @@
-# Launch your art on Bitcoin
+# Launch your game on Bitcoin
 
-## A simple template for launching your art on Bitcoin
+## A simple template for launching your game on Bitcoin
 
-It has everything you need to launch a new generative art collection on Bitcoin.
+It has everything you need to launch a new game on Bitcoin.
 
-How to publish? See https://docs.generative.xyz/
+How to publish? See [here]
 
-Questions? Join our community https://discord.gg/ZkECdDPs
+Questions? Join our community [here]
 
 ## Supported JS Libs fully on-chain
 
