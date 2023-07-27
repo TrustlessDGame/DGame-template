@@ -1,6 +1,6 @@
 // YOUR_ASSETS
 let GAME_ASSETS = {
-  asset_1: "./assets/1",
+  asset_1: "./assets/start_button.png",
 };
 // YOUR GAME CONTRACT ABI JSON INTERFACE
 const GAME_CONTRACT_ABI_INTERFACE_JSON = [
