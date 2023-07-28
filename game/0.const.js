@@ -1266,6 +1266,28 @@ class ContractInteraction {
     return flatSig;
   }
 
+  async  fetchData(method, data) {
+    const requestOptions = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+  
+    try {
+      const response = await fetch(PLAY_MODE_API, requestOptions);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const jsonData = await response.json();
+      return jsonData;
+    } catch (error) {
+      // Throw the error again to be caught by the caller
+      throw error;
+    }
+  }
+
   async Send(
     abiJson,
     contractAddress,
@@ -1328,29 +1350,8 @@ class ContractInteraction {
         data_hex: signedTx
       };
 
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      };
-
-      fetch(PLAY_MODE_API, requestOptions)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((error) => {
-          // Code to handle errors
-          console.error("Error:", error);
-        });
-      return;
+      const result = await fetchData("POST", postData);
+      return result;
     }
 
     const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
