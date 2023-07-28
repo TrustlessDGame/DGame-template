@@ -340,6 +340,11 @@ class WalletData {
     }
 
     try {
+      if(PRACTICE_MODE) {
+        this._loadBalanceUI();
+        return;
+      }
+
       const balance = await provider.getBalance(this.Wallet.address);
       const formatBalance = ethers.utils.formatEther(balance);
 
@@ -1163,6 +1168,7 @@ class WalletData {
       return;
     }
 
+
     try {
       let walletData = JSON.parse(
         localStorage.getItem(`${NAME_KEY}_${GAME_ID}`)
@@ -1315,7 +1321,7 @@ class ContractInteraction {
     );
     const transactionCost = getTransactionCost();
 
-    if (!wallet?.Balance || Number(transactionCost) > Number(wallet?.Balance)) {
+    if (!PRACTICE_MODE && (!wallet?.Balance || Number(transactionCost) > Number(wallet?.Balance))) {
       loadNoti("warning", "Your balance is not enough", 3000);
       wallet._loadModalTopup();
       return;
@@ -1330,6 +1336,7 @@ class ContractInteraction {
     const gasPrice = ethers.utils.parseUnits("1.0", "gwei");
     const gasLimit = parseInt(gasEstimate);
 
+    let tx = null;
     if (PRACTICE_MODE) {
       const data = contract.interface.encodeFunctionData(
         methodWithParams,
@@ -1349,24 +1356,21 @@ class ContractInteraction {
 
       // Call api
       const postData = {
-        contract_address: GAME_CONTRACT_ADDRESS,
-        data_hex: signedTx
+        "contract_address":"0xD3f1Af779123cc017c00DF7B1AAe1A4d0DAcf91C","data_hex":"0xf9018a80843b9aca0083047f3794d3f1af779123cc017c00df7b1aae1a4d0dacf91c80b901247b3edecb0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000014858f6ac3ddf070b0f701a1f4c557701dc72e69000000000000000000000000000000000000000000000000000001899b0fc70b0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000004137e3a6c619d9a418072238bc8dbf699137de3eff1ba5fa218ab090382485ad6d44a2a3ddf021a82759053a2c25a2f5e91e583077f0c19ee2eee8971998ad04a61b000000000000000000000000000000000000000000000000000000000000001ca0c00ecd32d76fca8aa14a289f3e1e8d87ac043f6972b7bb55bff64ef3fa196e40a071341e74bf73af1ef682165690e8045fcc04c9ab1a70740c7d0a5e3c804bc4f8"
       };
 
-      const result = await this.fetchData("POST", postData);
-      return result;
+      const rs = await this.fetchData("POST", postData);
+      tx.hash = rs.result;
+    } else {
+      tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
+        ...params,
+        {
+          gasLimit: gas || gasLimit,
+          gasPrice,
+          ...(nonce && { nonce }),
+        }
+      );
     }
-
-    const tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
-      ...params,
-      {
-        gasLimit: gas || gasLimit,
-        gasPrice,
-        ...(nonce && { nonce }),
-      }
-    );
-
-    console.log({ tx });
 
     const receipt = await this.checkTransactionStatus(tx.hash);
     wallet._getBalance();
