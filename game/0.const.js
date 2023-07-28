@@ -1251,14 +1251,14 @@ class ContractInteraction {
     );
   }
 
-  async SignMessage(nonce) {
+  async SignMessage(arrayTypes, ...datas) {
     let signer = new ethers.Wallet(wallet.Wallet.privateKey, provider);
-
+    let defaultTypes = ["address", "uint256", "address"];
+    defaultTypes = defaultTypes.concat(arrayTypes);
+    let defaultValues = [GAME_CONTRACT_ADDRESS, CHAIN_ID, wallet?.Wallet?.address];
+    defaultValues = defaultValues.concat(datas);
     const messageHash = ethers.utils.sha256(
-      ethers.utils.defaultAbiCoder.encode(
-        ["address", "uint256", "address", "uint256"],
-        [GAME_CONTRACT_ADDRESS, CHAIN_ID, wallet?.Wallet?.address, nonce]
-      )
+      ethers.utils.defaultAbiCoder.encode(defaultTypes, defaultValues)
     );
     let messageHashBytes = ethers.utils.arrayify(messageHash);
     let flatSig = await signer.signMessage(messageHashBytes);
