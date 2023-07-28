@@ -1330,22 +1330,17 @@ class ContractInteraction {
     const contract = this.loadContract(abiJson, contractAddress);
     const contractInterface = new ethers.utils.Interface(abiJson);
 
-    let tx = null;
+    let tx = {};
     if (PRACTICE_MODE) {
       const data = contract.interface.encodeFunctionData(
         methodWithParams,
         params
       );
 
-      let tx = {
+      tx = {
         to: GAME_CONTRACT_ADDRESS,
         data,
       };
-
-      // let signer = new ethers.Wallet(wallet.Wallet.privateKey, provider);
-      // const signedTx = await signer.signTransaction(tx);
-      // const rawTransaction = ethers.utils.hexlify(signedTx);
-      // console.log("Signed Transaction:", rawTransaction);
 
       // Call api
       const postData = {
