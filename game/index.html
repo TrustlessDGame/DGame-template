@@ -95,7 +95,6 @@
               await importUIDefault();
               await wallet._checkLogin();
               await preloadASSETS();
-              await contractInteraction.SignMessage([],[3232]);
               wallet._closeLoading();
               if (typeof window.callBackLoadResourcesComplete == "function") {
                 window.callBackLoadResourcesComplete();
