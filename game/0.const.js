@@ -340,7 +340,11 @@ class WalletData {
     }
 
     try {
+      const isEsixtBalanceUI =
+      document.querySelectorAll(".balance-ui").length > 0;
+
       if(PRACTICE_MODE) {
+        if(isEsixtBalanceUI) return;
         this._loadBalanceUI();
         return;
       }
@@ -349,9 +353,6 @@ class WalletData {
       const formatBalance = ethers.utils.formatEther(balance);
 
       this.Balance = formatBalance;
-      const isEsixtBalanceUI =
-        document.querySelectorAll(".balance-ui").length > 0;
-
       if (isEsixtBalanceUI) {
         const displayBalance = document.getElementById("display-balance");
         displayBalance.textContent = Number(formatBalance).toFixed(4);
