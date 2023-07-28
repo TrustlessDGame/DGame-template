@@ -1349,7 +1349,7 @@ class ContractInteraction {
 
       // Call api
       const postData = {
-        contract_addres: tx.to,
+        contract_address: tx.to,
         data_hex: tx.data
       };
 
