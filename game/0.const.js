@@ -8,7 +8,7 @@ const RPC_EXPLORER = "https://nos-explorer.regtest.trustless.computer/";
 const NETWORK_NAME = "NOS (Testnet)";
 const CURRENCY_SYMBOL = "TC";
 let LIB_ASSETS = {};
-const PLAY_MODE = 1; //0: win to earn 1 , play for fun,
+const PLAY_MODE = 1; //0: paid mode , 1: practice mode
 const PLAY_MODE_API = "test";
 
 // name CONTRACT_INTERACTION_BASIC
