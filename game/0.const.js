@@ -1198,7 +1198,7 @@ class ContractInteraction {
   constructor() {}
 
   loadContract(abiJson, contractAddress) {
-    if (!this.WalletData?.Wallet?.privateKey || !this.WalletData?.Balance)
+    if (!this.WalletData?.Wallet?.privateKey || (!this.WalletData?.Balance && !PRACTICE_MODE))
       return;
     const wallet = new ethers.Wallet(
       this.WalletData.Wallet.privateKey,
