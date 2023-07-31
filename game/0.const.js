@@ -8,7 +8,7 @@ const RPC_EXPLORER = "https://explorer.l2.trustless.computer/";
 const NETWORK_NAME = "NOS";
 const CURRENCY_SYMBOL = "TC";
 let LIB_ASSETS = {};
-const PLAY_MODE = 1; //0: paid mode , 1: practice mode
+const PLAY_MODE = 0; //0: paid mode , 1: practice mode
 const PLAY_MODE_API = "https://dev.fprotocol.io/nos/testnet/send-tx";
 
 // name CONTRACT_INTERACTION_BASIC
