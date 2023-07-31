@@ -1365,7 +1365,7 @@ class ContractInteraction {
         {
           gasLimit: gas || gasLimit,
           gasPrice,
-          ...(value && { value }),
+          value,
           ...(nonce && { nonce }),
         }
       );
