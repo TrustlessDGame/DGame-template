@@ -8,6 +8,14 @@ How to publish? See https://docs.trustless.computer/publish-a-foc-game/start-a-n
 
 Questions? Join our community [here]
 
+## Directories
+
+### Contracts
+Contain source code of contract.
+
+### Game
+Contain source code of gameplay, which be written by js, css, html, ...
+
 ## Supported JS Libs fully on-chain
 
 - [x] ethersumdjs@5.7.2.js
