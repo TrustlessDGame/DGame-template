@@ -4,7 +4,7 @@
 
 It has everything you need to launch a new game on Bitcoin.
 
-How to publish? See [here]
+How to publish? See https://docs.trustless.computer/publish-a-foc-game/start-a-new-project
 
 Questions? Join our community [here]
 
