@@ -1359,7 +1359,6 @@ class ContractInteraction {
       const gasLimit = parseInt(gasEstimate);
 
       const nonce = null;
-      console.log({value});
       tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
         ...params,
         {
