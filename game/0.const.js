@@ -1358,11 +1358,13 @@ class ContractInteraction {
       const gasPrice = ethers.utils.parseUnits("1.0", "gwei");
       const gasLimit = parseInt(gasEstimate);
 
+      const nonce = null;
       tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
         ...params,
         {
           gasLimit: gas || gasLimit,
           gasPrice,
+          value,
           ...(nonce && { nonce }),
         }
       );
