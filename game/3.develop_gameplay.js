@@ -31,7 +31,7 @@ async function Reset() {
   return await contractInteraction.Send(
     GAME_CONTRACT_ABI_INTERFACE_JSON,
     GAME_CONTRACT_ADDRESS,
-    ethers.utils.parseEther("0.001"),
+    null,
     0,
     null,
     "Reset()"
