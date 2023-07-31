@@ -8,7 +8,7 @@ const RPC_EXPLORER = "https://nos-explorer.regtest.trustless.computer/";
 const NETWORK_NAME = "NOS (Testnet)";
 const CURRENCY_SYMBOL = "TC";
 let LIB_ASSETS = {};
-const PLAY_MODE = 1; //0: paid mode , 1: practice mode
+const PLAY_MODE = 0; //0: paid mode , 1: practice mode
 const PLAY_MODE_API = "https://dev.fprotocol.io/nos/testnet/send-tx";
 
 // name CONTRACT_INTERACTION_BASIC
@@ -1301,7 +1301,7 @@ class ContractInteraction {
   async Send(
     abiJson,
     contractAddress,
-    nonce,
+    value,
     gas,
     topics, // For get event log
     methodWithParams,
@@ -1358,11 +1358,14 @@ class ContractInteraction {
       const gasPrice = ethers.utils.parseUnits("1.0", "gwei");
       const gasLimit = parseInt(gasEstimate);
 
+      const nonce = null;
+      console.log({value});
       tx = await contract.functions[methodWithParams.replace(/\s/g, "")](
         ...params,
         {
           gasLimit: gas || gasLimit,
           gasPrice,
+          ...(value && { value }),
           ...(nonce && { nonce }),
         }
       );
