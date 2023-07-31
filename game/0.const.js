@@ -1301,7 +1301,7 @@ class ContractInteraction {
   async Send(
     abiJson,
     contractAddress,
-    nonce,
+    value,
     gas,
     topics, // For get event log
     methodWithParams,
