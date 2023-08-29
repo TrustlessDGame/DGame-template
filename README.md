@@ -11,12 +11,15 @@ Questions? Join our community [here]
 ## Directories
 
 ### Contracts
+
 Contain source code of contract.
 
 ### Game
+
 Contain source code of gameplay, which be written by js, css, html, ...
 
 ### Ref
+
 https://github.com/TrustlessDGame/DGame-Minesweeper
 
 ## Supported JS Libs fully on-chain

@@ -118,18 +118,18 @@
           clearInterval(intervalPreloadDataId);
           (async () => {
             try {
-            wallet._loadModalLoading("Wait a moment...");
-            await preload();
-            await importUIDefault();
-            await wallet._checkLogin();
-            await preloadASSETS();
-            wallet._closeLoading();
-            if (typeof window.callBackLoadResourcesComplete == "function") {
-              window.callBackLoadResourcesComplete();
-            }
+              wallet._loadModalLoading("Wait a moment...");
+              await preload();
+              await importUIDefault();
+              await wallet._checkLogin();
+              await preloadASSETS();
+              wallet._closeLoading();
+              if (typeof window.callBackLoadResourcesComplete == "function") {
+                window.callBackLoadResourcesComplete();
+              }
             } catch (error) {
               wallet._closeLoading();
-              console.log(error)
+              console.log(error);
             }
           })();
         }
